@@ -143,6 +143,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../sessions/04_advanced.html" rel="" target="">
  <span class="dropdown-text">advanced</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../sessions/05_rlang.html" rel="" target="">
+ <span class="dropdown-text">rlang</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -227,7 +231,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 3. 同一の気象観測所が複数行に分かれて記録されていることがあるのでユニークにする</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(block_no, station_name, pref_code)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-8_85045bf612730d6c53fb04c33e642f51">
+<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-7_7749e3c01dcacdd59c7943e6447d8325">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_targets_st</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="kable-table">
@@ -266,14 +270,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>対象の気象観測所のblock_noがわかったので、<code>jma_collect()</code>関数を使ってデータを取得しましょう。 先ほど示したコードのblock_no引数を変更するだけです。</p>
-<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-10_f107e463216ac52855e35b6c98f8a150">
+<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-8_3b993d8d150cd61935b11b844411b9d5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"daily"</span>, <span class="at">block_no =</span> <span class="st">"47895"</span>, <span class="at">year =</span> <span class="dv">2023</span>, <span class="at">month =</span> <span class="dv">7</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"daily"</span>, <span class="at">block_no =</span> <span class="st">"47891"</span>, <span class="at">year =</span> <span class="dv">2023</span>, <span class="at">month =</span> <span class="dv">7</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"daily"</span>, <span class="at">block_no =</span> <span class="st">"47887"</span>, <span class="at">year =</span> <span class="dv">2023</span>, <span class="at">month =</span> <span class="dv">7</span>)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"daily"</span>, <span class="at">block_no =</span> <span class="st">"47893"</span>, <span class="at">year =</span> <span class="dv">2023</span>, <span class="at">month =</span> <span class="dv">7</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>ちょっと待ってください！ あなたが書こうと思いついたコードはどんなものですか？ もし、上に示したように<code>jma_collect()</code>関数の引数block_no部分だけを変えることを考えていたのであれば、purrrパッケージを使ったコードに置き換えることが可能です。purrrパッケージを使うことで、<code>jma_collect()</code>関数の指定は1回で済み、コードも簡略化できます。</p>
-<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-11_47e61fb25da523f275fb0a5d783d1ae2">
+<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-9_0b05fadf68c4cb288f6d6a03edb221ce">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_targets_st <span class="sc">|&gt;</span> </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pluck</span>(<span class="st">"block_no"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(</span>
@@ -282,7 +286,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>同じ関数を繰り返し記載したコードでは、どの引数が同じで、どの引数が違うのか注意を払う必要が生じます（例えば2023年7月の値を参照しているなかで、ある箇所だけが2020年8月と書いてしまうことがあるかもしれません）。<code>map()</code>関数ではそのような繰り返しの処理の引数の違いを心配することがなく、繰り返しの中での変更点だけに注意することができます。</p>
 <p>次に、取得した気象データを一つのデータフレームに格納することを考えましょう。その際、各データがどの気象観測所のものなのかわかるよう、<code>station_name</code>変数に気象観測所の名称を記録しておきます。この処理を回りくどく書くと次のようになります。</p>
-<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-12_f014f1cc4466ab2f93043a8d41163c28">
+<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-10_e9cfdaee0a5d4961c5b30c2759c27914">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"daily"</span>, <span class="at">block_no =</span> <span class="st">"47895"</span>, <span class="at">year =</span> <span class="dv">2023</span>, <span class="at">month =</span> <span class="dv">7</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">station_name =</span> <span class="st">"徳島"</span>, <span class="at">.before =</span> <span class="dv">1</span>),</span>
@@ -295,7 +299,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>列を追加する<code>mutate()</code>関数も対象の気象観測所の数に応じて追加することになり、書かなければいけないコード量が増えてしまいました。</p>
 <p><code>map()</code>関数の返り値はリスト形式ですが、リストの中身がデータフレームである場合、それらを一つのデータフレームにまとめる関数<code>list_rbind()</code>が用意されています。また、便利なのが<code>set_names()</code>関数と<code>list_rbind()</code>関数のnames_to引数を組み合わせることで、各データフレームに任意の列名と値を追加可能です。</p>
-<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-13_a792c48007bdd1f9f0ab3480be4207c9">
+<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-11_8336ec55c8135ad89099eef84c6e85b3">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_targets_st <span class="sc">|&gt;</span> </span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pluck</span>(<span class="st">"block_no"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(df_targets_st <span class="sc">|&gt;</span> </span>

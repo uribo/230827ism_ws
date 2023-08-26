@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -109,6 +143,10 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="../sessions/04_advanced.html" rel="" target="">
  <span class="dropdown-text">advanced</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../sessions/05_rlang.html" rel="" target="">
+ <span class="dropdown-text">rlang</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -143,7 +181,17 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#tidyr速習" id="toc-tidyr速習" class="nav-link active" data-scroll-target="#tidyr速習">tidyr速習</a></li>
+  <li><a href="#横長データと縦長データ" id="toc-横長データと縦長データ" class="nav-link" data-scroll-target="#横長データと縦長データ">横長データと縦長データ</a></li>
+  <li><a href="#separate_wider_-separate_longer_" id="toc-separate_wider_-separate_longer_" class="nav-link" data-scroll-target="#separate_wider_-separate_longer_">separate_wider_* / separate_longer_*</a></li>
+  <li><a href="#nest-unnest_wider-unnest_longer" id="toc-nest-unnest_wider-unnest_longer" class="nav-link" data-scroll-target="#nest-unnest_wider-unnest_longer">nest / unnest_wider / unnest_longer</a></li>
+  <li><a href="#pack-unpack" id="toc-pack-unpack" class="nav-link" data-scroll-target="#pack-unpack">pack / unpack</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/02_tidyr.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -165,11 +213,781 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="tidyr速習" class="level2">
+<h2 class="anchored" data-anchor-id="tidyr速習">tidyr速習</h2>
+<p>tidyrはデータフレームの形状を自由自在に変更するのに役立つパッケージです。messy、散らかったデータをtidy、整然なデータに変換することがtidyrの目的です。tidyデータ形式の詳細はHadley(2014)や<a href="https://r4ds.had.co.nz/tidy-data.html">こちら</a>が参考にしてください。このほか、データの形状を変更するための関数を提供します。</p>
+</section>
+<section id="横長データと縦長データ" class="level2">
+<h2 class="anchored" data-anchor-id="横長データと縦長データ">横長データと縦長データ</h2>
+<p>データの形状を表現する言葉として、しばしば「横長（あるいは横持ち）」「縦長（あるいは縦持ち）」が使われます。</p>
 <ul>
-<li>pivot_wider / pivot_longer</li>
+<li>横長… 変数が列、観測値が行に記録される</li>
+<li>縦長… 変数が行、観測値が列に記録される</li>
 </ul>
+<p>具体例を見てみましょう。</p>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-3_d8a60a6ecb2a4844e54849babe84d3e9">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2020年国勢調査での四国4県の男女別人口</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df_wide <span class="ot">&lt;-</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">area =</span> <span class="fu">c</span>(<span class="st">"徳島県"</span>, <span class="st">"香川県"</span>, <span class="st">"愛媛県"</span>, <span class="st">"高知県"</span>), </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    男 <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">343265</span>, <span class="dv">459197</span>, <span class="dv">633062</span>, <span class="dv">326531</span>), </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    女 <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">376294</span>, <span class="dv">491047</span>, <span class="dv">701779</span>, <span class="dv">364996</span>))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>df_wide</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">area</th>
+<th style="text-align: right;">男</th>
+<th style="text-align: right;">女</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">徳島県</td>
+<td style="text-align: right;">343265</td>
+<td style="text-align: right;">376294</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">香川県</td>
+<td style="text-align: right;">459197</td>
+<td style="text-align: right;">491047</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">愛媛県</td>
+<td style="text-align: right;">633062</td>
+<td style="text-align: right;">701779</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">高知県</td>
+<td style="text-align: right;">326531</td>
+<td style="text-align: right;">364996</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>本来、<code>性別</code>として一つの変数で扱えるはずのデータが、<code>男</code>と<code>女</code>という2つの変数に分かれてしいます。こうした横長のデータは、表計算ソフトでの入力には便利ですが、データ分析には不便です。データ分析では、<code>男</code>あるいは<code>女</code>として性別を扱うのではなく、<code>性別</code>の項目として男女の違いを扱うことが多いからです。</p>
+<p>このデータを縦長形式で表現すると次のようになります。</p>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-5_ccfc3f02108dfd86fafcf3a48a2305a6">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_long <span class="ot">&lt;-</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">area =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"徳島県"</span>, <span class="st">"香川県"</span>, <span class="st">"愛媛県"</span>, <span class="st">"高知県"</span>), <span class="at">each =</span> <span class="dv">2</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"男"</span>, <span class="st">"女"</span>), <span class="at">times =</span> <span class="dv">4</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="fu">c</span>(<span class="dv">343265</span>, <span class="dv">376294</span>, <span class="dv">459197</span>, <span class="dv">491047</span>, <span class="dv">633062</span>, <span class="dv">701779</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            <span class="dv">326531</span>, <span class="dv">364996</span>))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_long</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">area</th>
+<th style="text-align: left;">gender</th>
+<th style="text-align: right;">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">徳島県</td>
+<td style="text-align: left;">男</td>
+<td style="text-align: right;">343265</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">徳島県</td>
+<td style="text-align: left;">女</td>
+<td style="text-align: right;">376294</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">香川県</td>
+<td style="text-align: left;">男</td>
+<td style="text-align: right;">459197</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">香川県</td>
+<td style="text-align: left;">女</td>
+<td style="text-align: right;">491047</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">愛媛県</td>
+<td style="text-align: left;">男</td>
+<td style="text-align: right;">633062</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">愛媛県</td>
+<td style="text-align: left;">女</td>
+<td style="text-align: right;">701779</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">高知県</td>
+<td style="text-align: left;">男</td>
+<td style="text-align: right;">326531</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">高知県</td>
+<td style="text-align: left;">女</td>
+<td style="text-align: right;">364996</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>横長データと比べて、縦長データは冗長なようにも見えますが、Rの多くの関数は縦長のデータを好みます。例えばggplot2で性別ごとの人口を棒グラフで表示するには、縦長データを直接利用可能です。</p>
+<div class="cell" data-hash="02_tidyr_cache/html/2020_Population_Census_in_Shikoku_Region_32f378ec24cea9a1f591efb2b9c0615d">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_long) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(area, value, <span class="at">fill =</span> gender, <span class="at">group =</span> gender) <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">list</span>(<span class="st">`</span><span class="at">男</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"#001964"</span>, <span class="st">`</span><span class="at">女</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"#AF1900"</span>)) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> zipangu<span class="sc">::</span><span class="fu">label_kansuji</span>()) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"2020年国勢調査での四国4県の男女別人口"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> <span class="st">"都道府県"</span>, <span class="at">y =</span> <span class="st">"人口"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="02_tidyr_files/figure-html/2020_Population_Census_in_Shikoku_Region-1.png" class="img-fluid" width="2100"></p>
+</div>
+</div>
+<p>tidyrではこのような縦長・横長のデータ形式の変換を実現する関数が用意されています。縦長データを横長データに変換するには<code>pivot_wider()</code>を、横長データを縦長データに変換するには<code>pivot_longer()</code>を利用します。</p>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-8_7b8d849632595077f97bed24f7aac32a">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 横長から縦長へ</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">names_to =</span> <span class="st">"gender"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">area</th>
+<th style="text-align: left;">gender</th>
+<th style="text-align: right;">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">徳島県</td>
+<td style="text-align: left;">男</td>
+<td style="text-align: right;">343265</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">徳島県</td>
+<td style="text-align: left;">女</td>
+<td style="text-align: right;">376294</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">香川県</td>
+<td style="text-align: left;">男</td>
+<td style="text-align: right;">459197</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">香川県</td>
+<td style="text-align: left;">女</td>
+<td style="text-align: right;">491047</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">愛媛県</td>
+<td style="text-align: left;">男</td>
+<td style="text-align: right;">633062</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">愛媛県</td>
+<td style="text-align: left;">女</td>
+<td style="text-align: right;">701779</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">高知県</td>
+<td style="text-align: left;">男</td>
+<td style="text-align: right;">326531</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">高知県</td>
+<td style="text-align: left;">女</td>
+<td style="text-align: right;">364996</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-9_1108a2640eadbaf76b3b86356bfd54d8">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 縦長から横長へ</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_long <span class="sc">|&gt;</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> gender, <span class="at">values_from =</span> value)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">area</th>
+<th style="text-align: right;">男</th>
+<th style="text-align: right;">女</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">徳島県</td>
+<td style="text-align: right;">343265</td>
+<td style="text-align: right;">376294</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">香川県</td>
+<td style="text-align: right;">459197</td>
+<td style="text-align: right;">491047</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">愛媛県</td>
+<td style="text-align: right;">633062</td>
+<td style="text-align: right;">701779</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">高知県</td>
+<td style="text-align: right;">326531</td>
+<td style="text-align: right;">364996</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><code>pivot_wider()</code>関数では、対象のデータフレーム中の値と項目を格納する変数名とその値を</p>
+<p>既存の変数は引用符をつけずに指定します。一方で、元のデータフレームに存在しない列名を追加する</p>
+</section>
+<section id="separate_wider_-separate_longer_" class="level2">
+<h2 class="anchored" data-anchor-id="separate_wider_-separate_longer_">separate_wider_* / separate_longer_*</h2>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-10_26cadf657924f783a81cc6098ffded51">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">zipcode =</span> <span class="fu">c</span>(<span class="st">"100-0004"</span>, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"700-0027"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(<span class="at">cols =</span> zipcode, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">delim =</span> <span class="st">"-"</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"code1"</span>, <span class="st">"code2"</span>))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">code1</th>
+<th style="text-align: left;">code2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">100</td>
+<td style="text-align: left;">0004</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">700</td>
+<td style="text-align: left;">0027</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="nest-unnest_wider-unnest_longer" class="level2">
+<h2 class="anchored" data-anchor-id="nest-unnest_wider-unnest_longer">nest / unnest_wider / unnest_longer</h2>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-11_5e5946682f98bcdb09100b193475b097">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jpmesh)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>jpmesh<span class="sc">::</span><span class="fu">administration_mesh</span>(<span class="dv">36</span>, <span class="at">to_mesh_size =</span> <span class="dv">80</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">meshcode</th>
+<th style="text-align: left;">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">5034</td>
+<td style="text-align: left;">POLYGON ((134 33.33333, 135…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5134</td>
+<td style="text-align: left;">POLYGON ((134 34, 135 34, 1…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5133</td>
+<td style="text-align: left;">POLYGON ((133 34, 134 34, 1…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5033</td>
+<td style="text-align: left;">POLYGON ((133 33.33333, 134…</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">prefcode =</span> <span class="fu">str_pad</span>(<span class="fu">seq.int</span>(<span class="dv">36</span>, <span class="dv">37</span>), <span class="at">width =</span> <span class="dv">2</span>, <span class="at">pad =</span> <span class="st">"0"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">meshcode =</span> <span class="fu">map</span>(., \(prefcode) jpmesh<span class="sc">::</span><span class="fu">administration_mesh</span>(prefcode, <span class="at">to_mesh_size =</span> <span class="dv">80</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> meshcode)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">prefcode</th>
+<th style="text-align: left;">meshcode</th>
+<th style="text-align: left;">geometry</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">36</td>
+<td style="text-align: left;">5034</td>
+<td style="text-align: left;">POLYGON ((134 33.33333, 135…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">36</td>
+<td style="text-align: left;">5134</td>
+<td style="text-align: left;">POLYGON ((134 34, 135 34, 1…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">36</td>
+<td style="text-align: left;">5133</td>
+<td style="text-align: left;">POLYGON ((133 34, 134 34, 1…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">36</td>
+<td style="text-align: left;">5033</td>
+<td style="text-align: left;">POLYGON ((133 33.33333, 134…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">5034</td>
+<td style="text-align: left;">POLYGON ((134 33.33333, 135…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">5134</td>
+<td style="text-align: left;">POLYGON ((134 34, 135 34, 1…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">5133</td>
+<td style="text-align: left;">POLYGON ((133 34, 134 34, 1…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">37</td>
+<td style="text-align: left;">5033</td>
+<td style="text-align: left;">POLYGON ((133 33.33333, 134…</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-12_21a1227a047b1f251d2b059b2e0b9a32">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>zipangu<span class="sc">::</span><span class="fu">separate_address</span>(<span class="st">"東京都千代田区大手町一丁目"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$prefecture
+[1] "東京都"
+
+$city
+[1] "千代田区"
+
+$street
+[1] "大手町一丁目"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_address <span class="ot">&lt;-</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">address =</span> <span class="fu">c</span>(<span class="st">"東京都千代田区大手町一丁目"</span>, </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"岡山県岡山市北区清心町16-13"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">address_components =</span> purrr<span class="sc">::</span><span class="fu">pmap</span>(., <span class="sc">~</span> zipangu<span class="sc">::</span><span class="fu">separate_address</span>(..<span class="dv">1</span>)))  </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>df_address <span class="sc">|&gt;</span> </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_wider</span>(<span class="at">col =</span> address_components)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">address</th>
+<th style="text-align: left;">prefecture</th>
+<th style="text-align: left;">city</th>
+<th style="text-align: left;">street</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">東京都千代田区大手町一丁目</td>
+<td style="text-align: left;">東京都</td>
+<td style="text-align: left;">千代田区</td>
+<td style="text-align: left;">大手町一丁目</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">岡山県岡山市北区清心町16-13</td>
+<td style="text-align: left;">岡山県</td>
+<td style="text-align: left;">岡山市北区</td>
+<td style="text-align: left;">清心町16-13</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_address <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_longer</span>(<span class="at">col =</span> address_components)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 27%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">address</th>
+<th style="text-align: left;">address_components</th>
+<th style="text-align: left;">address_components_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">東京都千代田区大手町一丁目</td>
+<td style="text-align: left;">東京都</td>
+<td style="text-align: left;">prefecture</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">東京都千代田区大手町一丁目</td>
+<td style="text-align: left;">千代田区</td>
+<td style="text-align: left;">city</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">東京都千代田区大手町一丁目</td>
+<td style="text-align: left;">大手町一丁目</td>
+<td style="text-align: left;">street</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">岡山県岡山市北区清心町16-13</td>
+<td style="text-align: left;">岡山県</td>
+<td style="text-align: left;">prefecture</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">岡山県岡山市北区清心町16-13</td>
+<td style="text-align: left;">岡山市北区</td>
+<td style="text-align: left;">city</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">岡山県岡山市北区清心町16-13</td>
+<td style="text-align: left;">清心町16-13</td>
+<td style="text-align: left;">street</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="pack-unpack" class="level2">
+<h2 class="anchored" data-anchor-id="pack-unpack">pack / unpack</h2>
+<p>jmastats</p>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-13_119f68aabe6ac23ebc332c640a0ec38a">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jmastats)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_pack <span class="ot">&lt;-</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"monthly"</span>, <span class="at">block_no =</span> <span class="st">"47895"</span>, <span class="at">year =</span> <span class="dv">2022</span>, <span class="at">month =</span> <span class="dv">1</span>, <span class="at">pack =</span> <span class="cn">TRUE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data from: https://www.data.jma.go.jp/obd/stats/etrn/view/monthly_s1.php?prec_no=71&amp;block_no=47895&amp;year=2022&amp;month=1&amp;day=&amp;view=Treated as missing: lines 1, 2, 12 at temperature_min(℃)
+Treated as missing: lines 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 at solar_irradiance_average(MJ/m^2)
+Treated as missing: lines 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 at snow_fall(cm)
+Treated as missing: lines 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 at snow_max_fall_day(cm)
+Treated as missing: lines 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 at snow_depth(cm)
+Treated as missing: lines 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 at cloud_covering_mean
+Treated as missing: lines 4, 6, 8, 10 at condition_snow_days
+Treated as missing: lines 4, 6, 8, 10 at condition_fog_days
+Treated as missing: lines 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12 at condition_thunder_days</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+── Column specification ────────────────────────────────────────────────────────
+cols(
+  .default = col_double(),
+  wind_max_speed_direction = col_character(),
+  wind_max_instantaneous_direction = col_character(),
+  `solar_irradiance_average(MJ/m^2)` = col_logical(),
+  cloud_covering_mean = col_logical()
+)
+ℹ Use `spec()` for the full column specifications.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_unpack <span class="ot">&lt;-</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"monthly"</span>, <span class="at">block_no =</span> <span class="st">"47895"</span>, <span class="at">year =</span> <span class="dv">2022</span>, <span class="at">month =</span> <span class="dv">1</span>, <span class="at">pack =</span> <span class="cn">FALSE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-14_d1a174c89ace7f12ba821293a9efae84">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df_pack)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 12
+Columns: 11
+$ month            &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+$ atmosphere       &lt;tibble[,2]&gt; &lt;tbl_df[12 x 2]&gt;
+$ precipitation    &lt;tibble[,4]&gt; &lt;tbl_df[12 x 4]&gt;
+$ temperature      &lt;tibble[,5]&gt; &lt;tbl_df[12 x 5]&gt;
+$ humidity         &lt;tibble[,2]&gt; &lt;tbl_df[12 x 2]&gt;
+$ wind             &lt;tibble[,5]&gt; &lt;tbl_df[12 x 5]&gt;
+$ daylight         &lt;tibble[,1]&gt; &lt;tbl_df[12 x 1]&gt;
+$ snow             &lt;tibble[,3]&gt; &lt;tbl_df[12 x 3]&gt;
+$ solar_irradiance &lt;tibble[,1]&gt; &lt;tbl_df[12 x 1]&gt;
+$ cloud_covering   &lt;tibble[,1]&gt; &lt;tbl_df[12 x 1]&gt;
+$ condition        &lt;tibble[,3]&gt; &lt;tbl_df[12 x 3]&gt;</code></pre>
+</div>
+</div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-15_778dbe1741130b5eeea6ced40c72c6a6">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df_unpack)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 12
+Columns: 28
+$ month                               &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,…
+$ `atmosphere_land(hPa)`              &lt;dbl&gt; 1019.5, 1020.4, 1016.1, 1015.8, 10…
+$ `atmosphere_surface(hPa)`           &lt;dbl&gt; 1020.3, 1021.2, 1016.9, 1016.6, 10…
+$ `precipitation_sum(mm)`             &lt;dbl&gt; 22.5, 38.5, 86.0, 94.0, 155.0, 89.…
+$ `precipitation_max_per_day(mm)`     &lt;dbl&gt; 14.0, 20.0, 42.0, 30.0, 56.5, 24.5…
+$ `precipitation_max_1hour(mm)`       &lt;dbl&gt; 4.5, 3.0, 13.5, 17.0, 15.0, 15.0, …
+$ `precipitation_max_10minutes(mm)`   &lt;dbl&gt; 2.0, 1.0, 3.5, 5.0, 4.0, 11.0, 6.5…
+$ `temperature_average(℃)`            &lt;dbl&gt; 6.0, 5.5, 11.5, 16.1, 19.6, 23.7, …
+$ `temperature_average_max(℃)`        &lt;dbl&gt; 9.7, 9.5, 15.9, 20.6, 24.0, 27.7, …
+$ `temperature_average_min(℃)`        &lt;dbl&gt; 2.7, 1.9, 7.4, 12.1, 15.4, 20.2, 2…
+$ `temperature_max(℃)`                &lt;dbl&gt; 13.6, 14.6, 21.4, 27.0, 30.2, 34.7…
+$ `temperature_min(℃)`                &lt;dbl&gt; -0.5, -1.2, 2.5, 5.8, 10.0, 15.5, …
+$ `humidity_average(%)`               &lt;dbl&gt; 61, 59, 66, 69, 67, 77, 79, 77, 77…
+$ `humidity_min(%)`                   &lt;dbl&gt; 34, 25, 18, 9, 19, 40, 42, 43, 31,…
+$ `wind_average_speed(m/s)`           &lt;dbl&gt; 3.3, 3.4, 2.9, 2.9, 2.8, 2.7, 3.2,…
+$ `wind_max_speed(m/s)`               &lt;dbl&gt; 8.9, 10.2, 12.2, 9.0, 8.7, 12.5, 8…
+$ wind_max_speed_direction            &lt;chr&gt; "北西", "西北西", "南南東", "南南…
+$ `wind_max_instantaneous_speed(m/s)` &lt;dbl&gt; 15.6, 19.1, 20.5, 16.1, 15.0, 21.0…
+$ wind_max_instantaneous_direction    &lt;chr&gt; "北西", "西", "南南東", "西北西", …
+$ `daylight_(h)`                      &lt;dbl&gt; 165.2, 190.2, 193.8, 210.3, 208.4,…
+$ `solar_irradiance_average(MJ/m^2)`  &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `snow_fall(cm)`                     &lt;dbl&gt; 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11
+$ `snow_max_fall_day(cm)`             &lt;dbl&gt; 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11
+$ `snow_depth(cm)`                    &lt;dbl&gt; 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10
+$ cloud_covering_mean                 &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ condition_snow_days                 &lt;dbl&gt; 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
+$ condition_fog_days                  &lt;dbl&gt; 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0
+$ condition_thunder_days              &lt;dbl&gt; 0, 0, 0, 2, 0, 4, 7, 17, 8, 3, 1, 0</code></pre>
+</div>
+</div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-16_c35f3d93abd5263f92755aaefc05f15a">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df_pack <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(month, precipitation) <span class="sc">|&gt;</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> precipitation)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">month</th>
+<th style="text-align: right;">sum(mm)</th>
+<th style="text-align: right;">max_per_day(mm)</th>
+<th style="text-align: right;">max_1hour(mm)</th>
+<th style="text-align: right;">max_10minutes(mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">22.5</td>
+<td style="text-align: right;">14.0</td>
+<td style="text-align: right;">4.5</td>
+<td style="text-align: right;">2.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">38.5</td>
+<td style="text-align: right;">20.0</td>
+<td style="text-align: right;">3.0</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">86.0</td>
+<td style="text-align: right;">42.0</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">3.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">94.0</td>
+<td style="text-align: right;">30.0</td>
+<td style="text-align: right;">17.0</td>
+<td style="text-align: right;">5.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">155.0</td>
+<td style="text-align: right;">56.5</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">4.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">89.5</td>
+<td style="text-align: right;">24.5</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">11.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">124.0</td>
+<td style="text-align: right;">43.5</td>
+<td style="text-align: right;">16.0</td>
+<td style="text-align: right;">6.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">62.5</td>
+<td style="text-align: right;">14.5</td>
+<td style="text-align: right;">14.5</td>
+<td style="text-align: right;">10.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">283.0</td>
+<td style="text-align: right;">117.5</td>
+<td style="text-align: right;">48.0</td>
+<td style="text-align: right;">19.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">80.5</td>
+<td style="text-align: right;">24.5</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">5.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">82.0</td>
+<td style="text-align: right;">23.5</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">3.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">33.0</td>
+<td style="text-align: right;">9.5</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">1.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-17_9ea964b1ff9cc3acceb07bb359ce3d78">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df_unpack <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(month, <span class="fu">starts_with</span>(<span class="st">"precipitation"</span>))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 18%">
+<col style="width: 25%">
+<col style="width: 23%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">month</th>
+<th style="text-align: right;">precipitation_sum(mm)</th>
+<th style="text-align: right;">precipitation_max_per_day(mm)</th>
+<th style="text-align: right;">precipitation_max_1hour(mm)</th>
+<th style="text-align: right;">precipitation_max_10minutes(mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">22.5</td>
+<td style="text-align: right;">14.0</td>
+<td style="text-align: right;">4.5</td>
+<td style="text-align: right;">2.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">38.5</td>
+<td style="text-align: right;">20.0</td>
+<td style="text-align: right;">3.0</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">86.0</td>
+<td style="text-align: right;">42.0</td>
+<td style="text-align: right;">13.5</td>
+<td style="text-align: right;">3.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">94.0</td>
+<td style="text-align: right;">30.0</td>
+<td style="text-align: right;">17.0</td>
+<td style="text-align: right;">5.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">155.0</td>
+<td style="text-align: right;">56.5</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">4.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">89.5</td>
+<td style="text-align: right;">24.5</td>
+<td style="text-align: right;">15.0</td>
+<td style="text-align: right;">11.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">124.0</td>
+<td style="text-align: right;">43.5</td>
+<td style="text-align: right;">16.0</td>
+<td style="text-align: right;">6.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">62.5</td>
+<td style="text-align: right;">14.5</td>
+<td style="text-align: right;">14.5</td>
+<td style="text-align: right;">10.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">283.0</td>
+<td style="text-align: right;">117.5</td>
+<td style="text-align: right;">48.0</td>
+<td style="text-align: right;">19.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">80.5</td>
+<td style="text-align: right;">24.5</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">5.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">82.0</td>
+<td style="text-align: right;">23.5</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">3.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">33.0</td>
+<td style="text-align: right;">9.5</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">1.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -540,7 +1358,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-left">Copyright 2023, Shinya Uryu</div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/02_tidyr.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></div>
+    </div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
