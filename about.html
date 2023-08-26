@@ -224,8 +224,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <section id="renvを使った環境の復元" class="level3">
 <h3 class="anchored" data-anchor-id="renvを使った環境の復元">renvを使った環境の復元</h3>
-<div class="cell" data-hash="about_cache/html/unnamed-chunk-1_f37859027440dda5801b160604981ac6">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">install</span>()</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><a href="https://github.com/uribo/230827ism_ws">GitHubリポジトリ</a>をクローンまたはダウンロードし、Rprojファイルを開き、RStudioを起動させます。続いて下記のコマンドでRパッケージのインストールを行います。なお、GitHubからインストールを行うパッケージがあるため、環境変数”GITHUB_PAT”を事前に設定しておく必要があります。</p>
+<div class="cell" data-hash="about_cache/html/unnamed-chunk-1_475f2ef03a8ad5c17d345119b93814ce">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"renv"</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"renv"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">GITHUB_PAT =</span> <span class="st">"{自身のGitHub Personal Token}"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">restore</span>()</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

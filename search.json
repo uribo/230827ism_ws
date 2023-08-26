@@ -109,7 +109,7 @@
     "href": "about.html#実行環境",
     "title": "About",
     "section": "実行環境",
-    "text": "実行環境\n\nR 4.3.1\nmacOS Ventura 13.4.1\n\n\nrenvを使った環境の復元\n\nrenv::install()"
+    "text": "実行環境\n\nR 4.3.1\nmacOS Ventura 13.4.1\n\n\nrenvを使った環境の復元\nGitHubリポジトリをクローンまたはダウンロードし、Rprojファイルを開き、RStudioを起動させます。続いて下記のコマンドでRパッケージのインストールを行います。なお、GitHubからインストールを行うパッケージがあるため、環境変数”GITHUB_PAT”を事前に設定しておく必要があります。\n\nif (!requireNamespace(\"renv\"))\n  install.packages(\"renv\")\n\nSys.setenv(GITHUB_PAT = \"{自身のGitHub Personal Token}\")\nrenv::restore()"
   },
   {
     "objectID": "license.html",
