@@ -127,6 +127,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../sessions/00_tidyverse.html" rel="" target="">
  <span class="dropdown-text">tidyverse</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../sessions/01_dplyr.html" rel="" target="">
+ <span class="dropdown-text">dplyr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../sessions/02_tidyr.html" rel="" target="">
+ <span class="dropdown-text">tidyr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../sessions/03_purrr.html" rel="" target="">
+ <span class="dropdown-text">purrr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../sessions/04_advanced.html" rel="" target="">
+ <span class="dropdown-text">advanced</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -192,12 +208,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>これらのパッケージの開発者はPosit社のメンバーが中心となっており、統一的な設計思想に基づいて開発が行われています。そのため、各パッケージ間での利用方法の差異が少なく、連携が容易な点もtidyverseを使う一つの利点となります。</p>
 <p>tidyverseパッケージは次のコマンドを実行することでインストールされます。たくさんのパッケージをインストールするため、少し時間がかかるかもしれません。ですが、一度インストールしておくと、tidyverseに含まれるパッケージを個別にインストールする手間がなくなります。</p>
-<div class="cell">
+<div class="cell" data-hash="00_tidyverse_cache/html/unnamed-chunk-1_5d9f8ddefe26ed026db131822a65e669">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>インストールは済みましたか？</p>
 <p>それでは、tidyverseパッケージ（そしてそれに含まれる各種パッケージ）を 利用可能にしましょう。</p>
-<div class="cell">
+<div class="cell" data-hash="00_tidyverse_cache/html/unnamed-chunk-2_dae3eadd6ee62e217a0c8b07482e18ed">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
@@ -579,10 +595,48 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       });
     }
   }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp("https:\/\/uribo\.github\.io\/230827ism_ws");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // default icon
+          link.classList.add("external");
+      }
+    }
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Copyright 2023, Shinya Uryu</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/00_tidyverse.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/uribo">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/u_ribo">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/00_tidyverse.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></div></div></footer></body></html>
+</body></html>

@@ -1,19 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://uribo.github.io/230827ism_ws/sessions/04_advanced.html</loc>
+    <lastmod>2023-08-26T13:03:08.351Z</lastmod>
+  </url>
+  <url>
+    <loc>https://uribo.github.io/230827ism_ws/sessions/02_tidyr.html</loc>
+    <lastmod>2023-08-26T13:02:39.093Z</lastmod>
+  </url>
+  <url>
     <loc>https://uribo.github.io/230827ism_ws/sessions/00_tidyverse.html</loc>
-    <lastmod>2023-08-26T05:16:07.789Z</lastmod>
-  </url>
-  <url>
-    <loc>https://uribo.github.io/230827ism_ws/about.html</loc>
-    <lastmod>2023-08-26T05:16:02.473Z</lastmod>
-  </url>
-  <url>
-    <loc>https://uribo.github.io/230827ism_ws/index.html</loc>
-    <lastmod>2023-08-26T05:15:58.505Z</lastmod>
+    <lastmod>2023-08-26T13:01:48.607Z</lastmod>
   </url>
   <url>
     <loc>https://uribo.github.io/230827ism_ws/license.html</loc>
-    <lastmod>2023-08-26T05:16:02.849Z</lastmod>
+    <lastmod>2023-08-26T13:01:39.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://uribo.github.io/230827ism_ws/about.html</loc>
+    <lastmod>2023-08-26T13:01:28.710Z</lastmod>
+  </url>
+  <url>
+    <loc>https://uribo.github.io/230827ism_ws/index.html</loc>
+    <lastmod>2023-08-26T13:01:38.843Z</lastmod>
+  </url>
+  <url>
+    <loc>https://uribo.github.io/230827ism_ws/references.html</loc>
+    <lastmod>2023-08-26T13:01:39.719Z</lastmod>
+  </url>
+  <url>
+    <loc>https://uribo.github.io/230827ism_ws/sessions/01_dplyr.html</loc>
+    <lastmod>2023-08-26T13:02:31.184Z</lastmod>
+  </url>
+  <url>
+    <loc>https://uribo.github.io/230827ism_ws/sessions/03_purrr.html</loc>
+    <lastmod>2023-08-26T13:02:52.378Z</lastmod>
   </url>
 </urlset>

@@ -93,6 +93,22 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="./sessions/00_tidyverse.html" rel="" target="">
  <span class="dropdown-text">tidyverse</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./sessions/01_dplyr.html" rel="" target="">
+ <span class="dropdown-text">dplyr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sessions/02_tidyr.html" rel="" target="">
+ <span class="dropdown-text">tidyr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sessions/03_purrr.html" rel="" target="">
+ <span class="dropdown-text">purrr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sessions/04_advanced.html" rel="" target="">
+ <span class="dropdown-text">advanced</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -514,9 +530,47 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       });
     }
   }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp("https:\/\/uribo\.github\.io\/230827ism_ws");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // default icon
+          link.classList.add("external");
+      }
+    }
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Copyright 2023, Shinya Uryu</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/uribo">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/u_ribo">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
 
 
 
