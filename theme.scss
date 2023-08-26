@@ -1,0 +1,36 @@
+/*-- scss:defaults --*/
+
+$font-family-code: Consolas, 'Liberation Mono', Menlo, Courler, monospace !default;
+$font-family-italic: 'Helvetica Neue', Helvetica, 'ヒラギノ角ゴ ProN W3', 'Hiragino Kaku Gothic ProN', '游ゴシック', YuGothic, sans-serif !default;
+$font-family-sans-serif: 'Helvetica Neue', Helvetica, 'ヒラギノ角ゴ ProN W3', 'Hiragino Kaku Gothic ProN', 'メイリオ', Meiryo, sans-serif !default;
+$font-family-serif: "Times New Roman", "游明朝", YuMincho, "ヒラギノ明朝 ProN W3", "Hiragino Mincho ProN", "メイリオ", Meiryo, serif !default;
+$link-color: #5192fb;
+$link-color-dark: #fb1893;
+$link-color-visited: #141024;
+$link-color-hover: #f0a210;
+
+/*-- scss:rules --*/
+
+h1, .navbar-title {
+  font-weight: 800;
+}
+
+.navbar-title {
+  color: #fafbf9;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: #fafbf9;
+}
+.navbar-dark .navbar-nav .nav-link.active {
+  color: #fafbf9;
+}
+
+h1, h2, h3, span, body {
+  font-family: 'Helvetica Neue', 'Arial', sans-serif;
+  font-feature-settings: "ss01" 1;
+}
+
+code, .code {
+  font-family: 'Liberation Mono', 'Consolas', monospace;
+}
