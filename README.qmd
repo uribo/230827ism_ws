@@ -28,3 +28,17 @@ pals <-
 scales::show_col(pals, ncol = 4)
 ```
 
+## QRコード
+
+```{r}
+#| eval: false
+#| echo: true
+library(qrcode)
+code <- qr_code("https://uribo.github.io/230827ism_ws/")
+png(filename = "images/qrcode.png", width = 200, height = 200)
+plot(code)
+dev.off()
+```
+
+![](images/qrcode.png)
+

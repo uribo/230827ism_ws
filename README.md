@@ -22,3 +22,13 @@ scales::show_col(pals, ncol = 4)
 ```
 
 ![](README_files/figure-commonmark/unnamed-chunk-1-1.png)
+
+## QRコード
+
+``` r
+library(qrcode)
+code <- qr_code("https://uribo.github.io/230827ism_ws/")
+generate_svg(code, filename = "images/qrcode.svg")
+```
+
+![](images/qrcode.svg)
