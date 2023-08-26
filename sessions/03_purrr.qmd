@@ -1,0 +1,82 @@
+---
+title: "purrr"
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+```
+
+```{r}
+map2(c("a", "b", "c"),
+     c("D", "E", "F"),
+     paste0)
+```
+
+```{r}
+#| error: true
+tibble::tibble(
+    x = c("a", "b", "c"),
+    y = c("D", "E", "F")) |> 
+    purrr::map2(\(x, y) paste0(x, y))
+```
+
+
+```{r}
+tibble::tibble(
+  x = c("a", "b", "c"),
+  y = c("D", "E", "F")) |> 
+  purrr::pmap(\(x, y) paste0(x, y))
+```
+
+```{r}
+tibble::tibble(
+  x = c("a", "b", "c"),
+  y = c("D", "E", "F")) %>%
+  dplyr::mutate(z = purrr::pmap(., \(x, y) paste0(x, y))) |> 
+  tidyr::unnest(cols = z)
+
+tibble::tibble(
+  x = c("a", "b", "c"),
+  y = c("D", "E", "F")) %>%
+  dplyr::mutate(z = purrr::pmap_chr(., \(x, y) paste0(x, y)))
+```
+
+
+
+
+プログレスバー
+
+- errors ... 何番目の要素に問題があるか
+
+```{r}
+#| error: true
+list(1, 2, "c") |> 
+  purrr::map(\(x) x + 1)
+```
+```{r}
+#| error: true
+seq.int(3) |> 
+  map(\(x) factor(letters[x]))
+```
+
+```{r}
+seq.int(3) |> 
+  map_vec(\(x) factor(letters[x]))
+```
+
+```{r}
+x <- list(a = 1, b = 2, c = 3, D = 4, E = 5)
+
+x |> 
+  keep_at(c("a", "b", "c")) |> 
+  str()
+
+x |> 
+  keep_at(function(x) x == tolower(x)) |> 
+  str()
+
+x |> 
+  discard_at(c("a", "b", "c")) |> 
+  str()
+```

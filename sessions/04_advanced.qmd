@@ -1,0 +1,137 @@
+---
+title: "Advanced"
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+```
+
+
+```{r}
+#| eval: false
+#| echo: true
+install.packages('jmastats', repos = c('https://uribo.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
+
+```{r}
+library(jmastats)
+```
+
+```{r}
+data(stations, package = "jmastats")
+```
+
+
+jmastatsパッケージは日本の気象庁が提供する気象データをRから利用可能にするパッケージです。このパッケージを用いて、四国4県を代表する気象観測所4地点（`徳島`, `高松`, `松山`, `高知`)での2023年7月の気象データを取得する場面を考えます。
+
+jmastatsパッケージでは、`jma_collect()`関数を使って目的の気象データの取得を行います。その際、データの種類（ここでは2023年7月の日ごとの観測値が知りたいので"daily"を指定します）、取得対象の年月日、取得対象の気象観測所が位置するコード（block_no）を指定します。
+
+「徳島」のblock_noは"47895"なので、次のようにすると2023年7月の日ごとの気象データが取得されます。
+
+```{r}
+#| eval: false
+#| echo: true
+jma_collect(item = "daily", block_no = "47895", year = 2023, month = 7)
+```
+
+では、対象の気象観測所を増やしてデータ取得を行いましょう。
+まずは4地点の気象観測所のblock_noを調べる必要があります。
+この処理は次のコードで実行します。
+
+```{r}
+df_targets_st <- 
+  # jmastatsパッケージに含まれる気象観測所のデータ
+  stations |> 
+  # 1. 観測所の名前が同じで四国以外に位置する観測所を除外するため、
+  #    都道府県コードによる絞り込みを行う
+  filter(pref_code %in% as.character(seq.int(36, 39))) |> 
+  # 2. 四国県内で目的の気象観測所の名称で絞り込む
+  filter(station_name %in% c("徳島", "高松", "松山", "高知")) |> 
+  # 3. 同一の気象観測所が複数行に分かれて記録されていることがあるのでユニークにする
+  distinct(block_no, station_name, pref_code)
+```
+
+```{r}
+#| include: false
+options(tibble.print_max = 4,
+        tibble.print_min = 4)
+```
+
+```{r}
+df_targets_st
+```
+
+```{r}
+#| include: false
+options(tibble.print_max = 3,
+        tibble.print_min = 3)
+```
+
+対象の気象観測所のblock_noがわかったので、`jma_collect()`関数を使ってデータを取得しましょう。
+先ほど示したコードのblock_no引数を変更するだけです。
+
+```{r}
+#| eval: false
+#| echo: true
+jma_collect(item = "daily", block_no = "47895", year = 2023, month = 7)
+jma_collect(item = "daily", block_no = "47891", year = 2023, month = 7)
+jma_collect(item = "daily", block_no = "47887", year = 2023, month = 7)
+jma_collect(item = "daily", block_no = "47893", year = 2023, month = 7)
+```
+
+ちょっと待ってください！
+あなたが書こうと思いついたコードはどんなものですか？
+もし、上に示したように`jma_collect()`関数の引数block_no部分だけを変えることを考えていたのであれば、purrrパッケージを使ったコードに置き換えることが可能です。purrrパッケージを使うことで、`jma_collect()`関数の指定は1回で済み、コードも簡略化できます。
+
+```{r}
+#| eval: false
+#| echo: true
+df_targets_st |> 
+  pluck("block_no") |> 
+  map(
+    \(x) jma_collect(item = "daily", block_no = x, year = 2023, month = 7)
+  )
+```
+
+同じ関数を繰り返し記載したコードでは、どの引数が同じで、どの引数が違うのか注意を払う必要が生じます（例えば2023年7月の値を参照しているなかで、ある箇所だけが2020年8月と書いてしまうことがあるかもしれません）。`map()`関数ではそのような繰り返しの処理の引数の違いを心配することがなく、繰り返しの中での変更点だけに注意することができます。
+
+次に、取得した気象データを一つのデータフレームに格納することを考えましょう。その際、各データがどの気象観測所のものなのかわかるよう、`station_name`変数に気象観測所の名称を記録しておきます。この処理を回りくどく書くと次のようになります。
+
+```{r}
+#| eval: false
+#| echo: true
+bind_rows(
+  jma_collect(item = "daily", block_no = "47895", year = 2023, month = 7) |> 
+    mutate(station_name = "徳島", .before = 1),
+  jma_collect(item = "daily", block_no = "47891", year = 2023, month = 7) |> 
+    mutate(station_name = "高松", .before = 1),
+  jma_collect(item = "daily", block_no = "47887", year = 2023, month = 7) |> 
+    mutate(station_name = "松山", .before = 1),
+  jma_collect(item = "daily", block_no = "47893", year = 2023, month = 7) |> 
+    mutate(station_name = "高知", .before = 1))
+```
+
+列を追加する`mutate()`関数も対象の気象観測所の数に応じて追加することになり、書かなければいけないコード量が増えてしまいました。
+
+`map()`関数の返り値はリスト形式ですが、リストの中身がデータフレームである場合、それらを一つのデータフレームにまとめる関数`list_rbind()`が用意されています。また、便利なのが`set_names()`関数と`list_rbind()`関数のnames_to引数を組み合わせることで、各データフレームに任意の列名と値を追加可能です。
+
+```{r}
+#| eval: false
+#| echo: true
+df_targets_st |> 
+  pluck("block_no") |> 
+  set_names(df_targets_st |> 
+              pluck("station_name")) |> 
+  map(
+    \(x) jma_collect(item = "daily", block_no = x, year = 2023, month = 7)
+  ) |> 
+  list_rbind(names_to = "station_name")
+```
+
+結果は回りくどく書いたコードと同じです。
+
+コードが複雑になればなるほど、purrrパッケージを使う利点が明確になります。
+
+

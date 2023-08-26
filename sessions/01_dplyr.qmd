@@ -1,0 +1,313 @@
+---
+title: "dplyr"
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+```
+
+
+```{r}
+library(palmerpenguins)
+```
+南極に生育するペンギン個体の各部位の大きさについてのデータ
+
+```{r}
+penguins |> 
+  slice_head(n = 6)
+```
+
+ペンギンデータに対して、以降の処理の説明を簡略化するために、いくつかの変数を減らします。
+
+```{r}
+penguins_small <-
+  penguins |> 
+  select(species, island, starts_with("bill"), sex)
+
+glimpse(penguins_small)
+```
+
+## 複数の列への処理
+
+### across
+
+共通の処理を複数の列へ適用する場合、次のように`変数 = 関数(変数)`の関係を個別に指定する書き方は効率が悪いです。`across()`関数を使うことで、このような複数列への一括処理が容易に行えるようになります。
+
+```{r}
+penguins_small |> 
+  # stringr::str_to_upper()はアルファベット文字列を大文字に変換します
+  transmute(species = str_to_upper(species),
+            sex = str_to_upper(sex))
+```
+
+::: {.panel-tabset}
+
+## 新しい書き方
+
+`across()`は関数を適用する列を.cols引数で指定し、適用する関数名を.fnsに渡して実行します。
+次のコードは`str_to_upper()`関数を2つの変数に個別に実行していたものを`across()`関数を使った書き方に直したものです。
+
+```{r}
+penguins_small |> 
+  transmute(across(.cols = c("species", "sex"), 
+                   .fns = str_to_upper))
+```
+
+結果は出力しませんが、以下のように書くこともできます。
+
+```{r}
+#| eval: false
+#| echo: true
+penguins_small |> 
+  transmute(across(c(species, sex), 
+                   str_to_upper))
+penguins_small |> 
+  transmute(across(c(species, sex), 
+                   ~ str_to_upper(.x)))
+penguins_small |> 
+  transmute(across(c(species, sex), 
+                   function(x) str_to_upper(x)))
+penguins_small |> 
+  transmute(across(c(species, sex), 
+                   \(x) str_to_upper(x)))
+```
+
+
+## 古い書き方
+
+`*_all()`, `*_at()`, `*_if()` で終わる関数を使って複数列への処理が可能ですが、これらの関数は2023年8月現在 `superseded`扱いとなっています。
+
+```{r}
+penguins_small |> 
+  transmute_at(c("species", "sex"), 
+               .funs = str_to_upper)
+```
+
+この書き方に慣れている人は、関数を指定する引数名が`across()`関数と異なる点に注意が必要です。
+具体的には`across(.fns = )`で関数を指定することになります。
+
+また、`*_all()`, `*_at()`, `*_if()`で利用可能だった、処理関数の第一引数以外の引数の指定方法は`across()`関数では利用できません。
+このあと説明する、`across()`関数での引数の指定方法を覚えましょう。
+
+```{r}
+penguins_small |> 
+  transmute_at(c("species", "sex"), 
+               .funs = str_sub, start = 1, end = 3)
+```
+
+:::
+
+`across()`関数では、処理を実行する関数（上記の例では`str_to_upper()`関数）の第一引数に.cols引数で指定した変数の値が渡されます。値以外や、第一引数以外に値を渡す必要がある場合などは、次のような書き方で渡される値を明示的に指定します。
+)
+
+::: {.panel-tabset}
+
+## チルダ
+
+```{r}
+# species及びsexの値は .x としてstr_sub()の第一引数に渡される
+penguins_small |> 
+  transmute(across(c(species, sex), ~ str_sub(.x, 1, 2)))
+```
+
+## 無名関数1
+
+```{r}
+# species及びsexの値は 無名関数の引数xとしてstr_sub()の第一引数に渡される
+penguins_small |> 
+  transmute(across(c(species, sex), function(x) str_sub(x, 1, 2)))
+```
+
+## 無名関数2
+
+```{r}
+# R 4.1.0から利用可能な無名関数の表記も使える
+penguins_small |> 
+  transmute(across(c(species, sex), \(x) str_sub(x, 1, 2)))
+```
+
+## チルダとリストの組み合わせ
+
+```{r}
+penguins_small |> 
+  transmute(across(c(species, sex), list(~ str_sub(.x, 1, 2))))
+```
+
+
+:::
+
+`across()`関数を使った複数列への処理では、通常、加工後の列名は元の列名と一致します。
+例えば、ペンギンデータのspeciesごとに数値変数の平均値を求める以下の処理とその結果を見てみましょう。
+
+```{r}
+penguins_small |> 
+  group_by(species) |> 
+  summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)))
+```
+
+この挙動が問題となることがあります。それは操作対象の変数に複数の関数を適用する場合です。
+次の例はペンギンデータのspeciesごとに、数値変数の平均値と標準偏差を求める処理ですが、計算された平均値が元の変数名に格納されるため、標準偏差の計算結果を正しく求めることができなくなっています。
+
+```{r}
+penguins_small |> 
+  group_by(species) |> 
+  summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)),
+            across(where(is.numeric), \(x) sd(x, na.rm = TRUE)))
+```
+
+こうした場合、`across()`関数の.names引数が役に立ちます。
+以下の例では、平均値を求める`across()`関数と標準偏差を求める`across()`関数それぞれに.names引数を指定しています。注目してほしいのは`"{.col}_"`の部分です。ここにはテンプレートとして元の変数名が使われます。その他、任意の文字列を新たに用意される変数名として利用することができます。
+
+```{r}
+penguins_small |> 
+  group_by(species) |> 
+  summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE), .names = "{.col}_mean"),
+            across(where(is.numeric), \(x) sd(x, na.rm = TRUE), .names = "{.col}_sd"))
+```
+
+
+```{r}
+penguins_small |> 
+  group_by(species) |> 
+  summarise(across(where(is.numeric), 
+                   list(mean = ~ mean(.x, na.rm = TRUE), 
+                        sd = ~ sd(.x, na.rm = TRUE))))
+```
+
+
+
+```{r}
+penguins_small |> 
+  group_by(species) |> 
+  summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE), 
+                   .names = "{.col}_mean"))
+```
+
+
+### tidyselect::where
+
+列の選択を行う`select()`関数にも、複数列への処理として、`mutate_if()`関数や`summarise_at()`関数と同様に`select_if()`関数等が利用できました。対象の列が一致する条件式を選択する、というもので、次のような記法を実行するのでした。
+
+```{r}
+# 因子型の列を選択
+penguins_small |> 
+  select_if(is.factor)
+```
+
+ところが`select_if()`や`select_at()`関数はやはりsuperseded扱いとなっています。代わりに、`where()`関数を使った条件式での列の指定が可能となっています。
+
+```{r}
+penguins_small |> 
+  select(where(is.factor))
+```
+
+### rename_with
+
+
+```{r}
+# すべての列を対象に、列名に対してstr_to_upper()関数が適用される
+penguins_small |> 
+  rename_with(str_to_upper) |> 
+  colnames()
+
+# 列名に対してstr_to_upper()関数が適用されるが、適用範囲を因子型の列だけに制限する
+penguins_small |> 
+  rename_with(str_to_upper, where(is.factor)) |> 
+  colnames()
+```
+
+## グループ
+
+先ほど、「種ごとに処理を適用する」例を示しましたが、ここで使われた種、すなわちグループの指定方法に変更があります。
+
+```{r}
+penguins_small |> 
+  group_by(species) |> 
+  summarise(n = n())
+```
+
+従来は、処理を行う前に`group_by()`関数で明示的にグループ対象の変数を指定する必要がありました。しかし現在は処理を行う`mutate()`や`summarise()`関数の中で.by引数によってグループ対象の変数を指定可能です。
+
+```{r}
+penguins_small |> 
+  summarise(n = n(), .by = species)
+
+penguins_small |> 
+  # speciesごとにbill_length_mmの最大値を計算した値が格納される
+  mutate(bill_length_max = max(bill_length_mm, na.rm = TRUE), 
+         .by = species) |> 
+  # speciesごとにデータを1件ずつ取り出す
+  # bill_lenght_maxの値がspeciesごとに異なることがわかる
+  slice(1, .by = species)
+
+
+penguins_small |> 
+  reframe(n = n(), .by = species)
+```
+
+また、複数のグループを指定した後の処理でグループを維持し続けるかを.groups引数で選択することが可能です。
+
+```{r}
+# group_by()で与えた最初のグループは解除されるが、以降のグループは維持される
+# グループ化の処理に対して、どのような振る舞いをするかを.groups引数で指定しないと
+# 警告文が出力される
+penguins_small |> 
+  group_by(species, island, sex) |> 
+  summarise(mean_bl = mean(bill_length_mm, na.rm = TRUE))
+```
+
+.groups引数に"drop"を与えた場合、すべてのグループが解除されます。一方、グループを継続するには"keep"を与えます。
+
+```{r}
+penguins_small |> 
+  group_by(species, island, sex) |> 
+  summarise(mean_bl = mean(bill_length_mm, na.rm = TRUE), 
+            .groups = "drop")
+
+penguins_small |> 
+  group_by(species, island, sex) |> 
+  summarise(mean_bl = mean(bill_length_mm, na.rm = TRUE), 
+            .groups = "keep")
+```
+
+
+
+
+## データ結合
+
+dplyrパッケージには次の表に示す通り、柔軟なデータ結合関数が提供されています。
+
+| 関数名 | 説明 |
+|--------|:-----|
+| `inner_join()` | キーとして指定した変数から、二つのデータフレームに共通して存在するレコードを結合して返す  |
+| `left_join()` | キーとして指定した変数から、左（第一引数）のデータフレームに存在するレコードを結合して返す |
+| `right_join()` | キーとして指定した変数から、右（第二引数）のデータフレームに存在するレコードを結合して返す |
+| `full_join()` | キーとして指定した変数から、二つのデータフレームのいずれかに存在するレコードを結合して返す |
+| `semi_join()` | (絞り込み) |
+| `anti_join()` | キーとして指定した変数から、左（第一引数）のデータフレームに存在しないレコードを結合して返す |
+
+実行は以下のように、対象のデータのほか、キーとなる変数をby引数で指定します。
+
+```
+inner_join(データ1, データ2, by = "キーとなる変数")
+```
+
+このby引数の指定方法として、`join_by()`関数を利用することもできます。この関数により、より柔軟な結合条件の指定が実現します。
+
+```{r}
+sales <- tibble(
+  id = c(1L, 1L, 1L, 2L, 2L),
+  sale_date = as.Date(c("2018-12-31", "2019-01-02", "2019-01-05", "2019-01-04", "2019-01-01"))
+)
+
+promos <- tibble(
+  id = c(1L, 1L, 2L),
+  promo_date = as.Date(c("2019-01-01", "2019-01-05", "2019-01-02"))
+)
+
+# 
+left_join(sales, promos, by = "id")
+left_join(sales, promos, by = "id", relationship = "many-to-many")
+```
+

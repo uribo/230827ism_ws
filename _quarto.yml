@@ -1,11 +1,8 @@
 project:
   type: website
   render:
-    - index.qmd
-    - about.qmd
-    - license.qmd
-    - references.qmd
-    - sessions/*.qmd
+    - "*.qmd"
+    - "!README.qmd"
 
 lang: ja
 
@@ -30,11 +27,30 @@ website:
       - menu:
         - text: tidyverse
           href: sessions/00_tidyverse.qmd
+        - text: dplyr
+          href: sessions/01_dplyr.qmd
+        - text: tidyr
+          href: sessions/02_tidyr.qmd
+        - text: purrr
+          href: sessions/03_purrr.qmd
+        - text: advanced
+          href: sessions/04_advanced.qmd
 
   site-url: https://uribo.github.io/230827ism_ws
 
   repo-url: https://github.com/uribo/230827ism_ws
   repo-actions: [edit, issue]
+
+  page-navigation: true
+  page-footer:
+    border: true
+    background: "#fafbf9"
+    left: "Copyright 2023, Shinya Uryu"
+    right:
+      - icon: github
+        href: https://github.com/uribo
+      - icon: twitter
+        href: https://twitter.com/u_ribo
 
 format:
   html:
@@ -46,8 +62,16 @@ format:
     toc: true
     code-copy: true
     code-overflow: wrap
+    code-link: true
+    link-external-icon: true
+    df-print: kable
 
 knitr:
   opts_chunk:
     dev: "ragg_png"
     dpi: 300
+
+execute:
+  freeze: auto
+  cache: refresh
+

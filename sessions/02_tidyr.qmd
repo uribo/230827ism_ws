@@ -1,0 +1,10 @@
+---
+title: "tidyr"
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+```
+
+- pivot_wider / pivot_longer

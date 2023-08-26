@@ -1,14 +1,12 @@
----
-title: "次の一歩を踏み出すためのtidyverse入門"
----
-
 ![](images/cover.jpeg){fig-align="center"}
 
 [tidyverse](https://www.tidyverse.org)はR言語でのデータ分析を行う際に便利なパッケージの集まりです。
 統一された設計思想のもとに、ファイルの読み書き（readr）からデータ操作（dplyr、tidyr）、可視化（ggplot2）などのパッケージを提供しています。2016年の登場から度重なるアップデートを経て、現在の最新バージョンは2.0.0と成熟期を迎えている状態です。
 国内外でtidyverseや関係するパッケージの解説は豊富に存在します。一方でRでの関数型プログラミングを補助するpurrrパッケージなど、他と比べて焦点を当てられる機会が少ないパッケージ・関数も見受けられます。この要因として、tidyverseの更新速度に追いつけず、新しい機能について十分に身につけることができないことがあると私は考えています。
 
-この資料では、tidyverseのさらなる活用を目指す人を対象に、これらの使い方を解説するとともに、より効率的に作業を進めるためのノウハウを伝授することを目指しています。なお、紹介するパッケージの基本的な情報については既存の資料を参考にしてください。
+この資料では、tidyverseのさらなる活用を目指す人を対象に、これらの使い方を解説するとともに、より効率的に作業を進めるためのノウハウを伝授することを目指しています。具体的には、tidyverseのコアパッケージでる[dplyr](sessions/01_dplyr.qmd)、[tidyr](sessions/02_tidyr.qmd)、[purrr](sessions/03_purrr.qmd)を中心に扱います。また、それ以外のtidyverseパッケージ群を組み合わせた、[発展的な話題](sessions/04_advanced.qmd)を紹介します。
+
+tidyverseとは何か？そこから知りたい人は[概論](sessions/00_tidyverse.qmd)をご覧ください。なお、紹介するパッケージの基本的な情報については[既存の資料](references.qmd)を参考にしてください。
 
 ## tidyverseパッケージの読み込み
 
@@ -25,7 +23,22 @@ tidyverseパッケージの最新版は、2023年8月27日現在、v2.0.0です�
 ### 主な対象者
 
 - dplyrやggplot2、tidyrについての基礎知識がある
-- tidyverseに含まれるパッケージの関数の知識を更新したい
-- データフレームだけでなく、リストの操作も快適に行えるようになりたい
-- 繰り返しの処理を書きがち、コードを簡潔に記述したい
-- 関数を書くことがない、あるいは少ない
+- tidyverseに含まれるパッケージの関数の知識を更新したい ... dplyr、tidyr、purrrの情報をアップデート
+- データフレームだけでなく、リストの操作も快適に行えるようになりたい... purrrについての理解を深める
+- 繰り返しの処理を書きがち、コードを簡潔に記述したい... purrrで効率的な処理！
+- 関数を書くことがない、あるいは少ない... rlangを使った関数が書けるように（目標）
+
+## 目次
+
+- [tidyverse概論](sessions/00_tidyverse.qmd)
+- [dplyr](sessions/01_dplyr.qmd)
+- [tidyr](sessions/02_tidyr.qmd)
+- [purrr](sessions/03_purrr.qmd)
+- [発展](sessions/04_advanced.qmd)
+
+## 謝辞
+
+このプロジェクトを含め、私のOSSに携わる活動を支援してくださっている[GitHubスポンサー](https://github.com/sponsors/uribo)の方々に、感謝申し上げます。
+活動を支援するためにGitHubスポンサーに加わっていただける方は[こちらのリンク](https://github.com/sponsors/uribo)から登録をお願います。
+
+<iframe src="https://github.com/sponsors/uribo/card" title="Sponsor uribo" height="225" width="600" style="border: 0;"></iframe>
