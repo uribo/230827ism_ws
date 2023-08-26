@@ -6,7 +6,7 @@ title: "ライセンス"
 
 ![](https://i.creativecommons.org/l/by/4.0/88x31.png)
 
-## # MIT License
+## MIT License
 
 Copyright (c) 2023 Shinya Uryu
 
