@@ -54,19 +54,7 @@ df_targets_st <-
 ```
 
 ```{r}
-#| include: false
-options(tibble.print_max = 4,
-        tibble.print_min = 4)
-```
-
-```{r}
 df_targets_st
-```
-
-```{r}
-#| include: false
-options(tibble.print_max = 3,
-        tibble.print_min = 3)
 ```
 
 対象の気象観測所のblock_noがわかったので、`jma_collect()`関数を使ってデータを取得しましょう。
@@ -132,6 +120,12 @@ df_targets_st |>
 
 結果は回りくどく書いたコードと同じです。
 
+```{r}
+
+```
+
+
 コードが複雑になればなるほど、purrrパッケージを使う利点が明確になります。
+
 
 

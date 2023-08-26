@@ -35,6 +35,8 @@ website:
           href: sessions/03_purrr.qmd
         - text: advanced
           href: sessions/04_advanced.qmd
+        - text: rlang
+          href: sessions/05_rlang.qmd
 
   site-url: https://uribo.github.io/230827ism_ws
 

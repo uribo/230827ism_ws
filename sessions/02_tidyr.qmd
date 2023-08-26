@@ -7,4 +7,167 @@ title: "tidyr"
 library(tidyverse)
 ```
 
-- pivot_wider / pivot_longer
+## tidyr速習
+
+tidyrはデータフレームの形状を自由自在に変更するのに役立つパッケージです。messy、散らかったデータをtidy、整然なデータに変換することがtidyrの目的です。tidyデータ形式の詳細はHadley(2014)や[こちら](https://r4ds.had.co.nz/tidy-data.html)が参考にしてください。このほか、データの形状を変更するための関数を提供します。
+
+## 横長データと縦長データ
+
+データの形状を表現する言葉として、しばしば「横長（あるいは横持ち）」「縦長（あるいは縦持ち）」が使われます。
+
+- 横長... 変数が列、観測値が行に記録される
+- 縦長... 変数が行、観測値が列に記録される
+
+具体例を見てみましょう。
+
+```{r}
+#| echo: false
+#| eval: false
+jpops::get_jinkou(2020, .area = "prefecture") |> 
+  filter(str_detect(area_code, "^(36|37|38|39)")) |> select(gender, area, value) |> 
+  pivot_wider(names_from = gender, values_from = value)
+```
+
+```{r}
+# 2020年国勢調査での四国4県の男女別人口
+df_wide <- 
+  tibble(
+    area = c("徳島県", "香川県", "愛媛県", "高知県"), 
+    男 = c(343265, 459197, 633062, 326531), 
+    女 = c(376294, 491047, 701779, 364996))
+
+df_wide
+```
+
+本来、`性別`として一つの変数で扱えるはずのデータが、`男`と`女`という2つの変数に分かれてしいます。こうした横長のデータは、表計算ソフトでの入力には便利ですが、データ分析には不便です。データ分析では、`男`あるいは`女`として性別を扱うのではなく、`性別`の項目として男女の違いを扱うことが多いからです。
+
+このデータを縦長形式で表現すると次のようになります。
+
+```{r}
+#| include: false
+options(
+      tibble.print_max = 8,
+      tibble.print_min = 8)
+```
+
+```{r}
+df_long <- 
+  tibble(
+  area = rep(c("徳島県", "香川県", "愛媛県", "高知県"), each = 2),
+  gender = rep(c("男", "女"), times = 4),
+  value = c(343265, 376294, 459197, 491047, 633062, 701779,
+            326531, 364996))
+df_long
+```
+
+横長データと比べて、縦長データは冗長なようにも見えますが、Rの多くの関数は縦長のデータを好みます。例えばggplot2で性別ごとの人口を棒グラフで表示するには、縦長データを直接利用可能です。
+
+```{r}
+#| label: 2020_Population_Census_in_Shikoku_Region
+ggplot(df_long) +
+    aes(area, value, fill = gender, group = gender) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_manual(values = list(`男` = "#001964", `女` = "#AF1900")) +
+    scale_y_continuous(labels = zipangu::label_kansuji()) +
+    labs(title = "2020年国勢調査での四国4県の男女別人口",
+         x = "都道府県", y = "人口")
+```
+
+
+```{r}
+#| include: false
+options(
+      tibble.print_max = 4,
+      tibble.print_min = 4)
+```
+
+tidyrではこのような縦長・横長のデータ形式の変換を実現する関数が用意されています。縦長データを横長データに変換するには`pivot_wider()`を、横長データを縦長データに変換するには`pivot_longer()`を利用します。
+
+```{r}
+# 横長から縦長へ
+df_wide |> 
+  pivot_longer(cols = 2:3, names_to = "gender", values_to = "value")
+```
+
+```{r}
+# 縦長から横長へ
+df_long |> 
+  pivot_wider(names_from = gender, values_from = value)
+```
+
+`pivot_wider()`関数では、対象のデータフレーム中の値と項目を格納する変数名とその値を
+
+既存の変数は引用符をつけずに指定します。一方で、元のデータフレームに存在しない列名を追加する
+
+## separate_wider_* / separate_longer_*
+
+```{r}
+tibble(zipcode = c("100-0004", 
+                   "700-0027")) |> 
+  separate_wider_delim(cols = zipcode, 
+                       delim = "-", 
+                       names = c("code1", "code2"))
+```
+
+
+## nest / unnest_wider / unnest_longer
+
+
+```{r}
+library(jpmesh)
+jpmesh::administration_mesh(36, to_mesh_size = 80)
+tibble(
+  prefcode = str_pad(seq.int(36, 37), width = 2, pad = "0")) %>%
+  mutate(meshcode = map(., \(prefcode) jpmesh::administration_mesh(prefcode, to_mesh_size = 80))) |> 
+  unnest(cols = meshcode)
+```
+
+```{r}
+zipangu::separate_address("東京都千代田区大手町一丁目")
+
+df_address <- 
+  tibble(address = c("東京都千代田区大手町一丁目", 
+                   "岡山県岡山市北区清心町16-13")) %>%
+  mutate(address_components = purrr::pmap(., ~ zipangu::separate_address(..1)))  
+
+df_address |> 
+  unnest_wider(col = address_components)
+
+df_address |> 
+  unnest_longer(col = address_components)
+```
+
+
+## pack / unpack
+
+jmastats
+
+```{r}
+library(jmastats)
+df_pack <- 
+  jma_collect(item = "monthly", block_no = "47895", year = 2022, month = 1, pack = TRUE)
+
+df_unpack <- 
+  jma_collect(item = "monthly", block_no = "47895", year = 2022, month = 1, pack = FALSE)
+```
+
+```{r}
+glimpse(df_pack)
+```
+
+```{r}
+glimpse(df_unpack)
+```
+
+```{r}
+df_pack |> 
+  select(month, precipitation) |> 
+  unnest(cols = precipitation)
+```
+
+```{r}
+df_unpack |> 
+  select(month, starts_with("precipitation"))
+```
+
+

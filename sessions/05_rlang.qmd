@@ -1,0 +1,117 @@
+---
+title: "tidyverseとrlangを組み合わせる"
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+```
+
+これまで、tidyverseの各パッケージで利用可能な関数について紹介してきました。最期に、tidyverseの関数を組み合わせて独自の関数を定義する際に覚えておくと捗る、rlangパッケージとの連携を導入します。
+
+rlangとは、R言語におけるプログラミングのためのフレームワークとAPIを提供するパッケージの一種です。
+
+```{r}
+library(palmerpenguins)
+```
+
+
+```{r}
+#| eval: false
+#| echo: true
+mtcars |> 
+  count(gear) |> 
+  ggplot() +
+  aes(gear, n) +
+  geom_bar(stat = "identity")
+
+diamonds |> 
+  count(cut) |> 
+  ggplot() +
+  aes(cut, n) +
+  geom_bar(stat = "identity")
+
+penguins |> 
+  count(species) |> 
+  ggplot() +
+  aes(species, n) +
+  geom_bar(stat = "identity")
+```
+
+```{r}
+my_barplot <- function(data, var) {
+  data |> 
+  count(var) |> 
+  ggplot() +
+  aes(var, n) +
+  geom_bar(stat = "identity")
+}
+```
+
+```{r}
+#| error: true
+my_barplot(mtcars, gear)
+```
+
+```{r}
+#| eval: false
+#| echo: true
+my_barplot <- function(data, var) {
+  data |> 
+  count({{ var }}) |> 
+  ggplot() +
+  aes({{ var }}, n) +
+  geom_bar(stat = "identity")
+}
+
+my_barplot(mtcars, gear)
+```
+
+```{r}
+#| eval: false
+#| echo: true
+my_barplot(diamonds, cut)
+my_barplot(penguins, species)
+```
+
+```{r}
+my_barplot <- function(data, var) {
+  data |> 
+  count({{ var }}) |> 
+  ggplot() +
+  aes({{ var }}, n) +
+  geom_bar(stat = "identity")
+}
+```
+
+```{r}
+#| eval: false
+#| echo: true
+penguins |> 
+  count(species) |> 
+  mutate(species = fct_reorder(species, n)) |> 
+  ggplot() +
+  aes(species, n) +
+  geom_bar(stat = "identity")
+```
+
+```{r}
+#| eval: false
+#| echo: true
+my_barplot2 <- function(data, var, ...) {
+  data |> 
+    count({{ var }}) |> 
+    mutate({{ var}} := fct_reorder({{var}}, n)) |> 
+    ggplot() +
+    aes({{ var }}, n, fill = {{ var }}) +
+    geom_bar(stat = "identity",
+             show.legend = FALSE,
+             ...)
+}
+
+my_barplot2(penguins, species)
+my_barplot2(penguins, species, fill = "tomato")
+```
+
+
+
