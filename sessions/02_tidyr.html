@@ -189,6 +189,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#横長データと縦長データ" id="toc-横長データと縦長データ" class="nav-link" data-scroll-target="#横長データと縦長データ">横長データと縦長データ</a></li>
   <li><a href="#separate_wider_-separate_longer_" id="toc-separate_wider_-separate_longer_" class="nav-link" data-scroll-target="#separate_wider_-separate_longer_">separate_wider_* / separate_longer_*</a></li>
   <li><a href="#nest-unnest_wider-unnest_longer" id="toc-nest-unnest_wider-unnest_longer" class="nav-link" data-scroll-target="#nest-unnest_wider-unnest_longer">nest / unnest_wider / unnest_longer</a></li>
+  <li><a href="#extract" id="toc-extract" class="nav-link" data-scroll-target="#extract">extract</a></li>
   <li><a href="#pack-unpack" id="toc-pack-unpack" class="nav-link" data-scroll-target="#pack-unpack">pack / unpack</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/02_tidyr.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></nav>
@@ -681,13 +682,62 @@ $street
 </div>
 </div>
 </section>
+<section id="extract" class="level2">
+<h2 class="anchored" data-anchor-id="extract">extract</h2>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-13_fcafaa4f93515dbece632ea72c5d35f2">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">month =</span> <span class="fu">c</span>(<span class="st">"令和4年12月"</span>, <span class="st">"令和4年11月"</span>, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="st">"令和4年10月"</span>, <span class="st">"令和4年9月"</span>, <span class="st">"令和4年8月"</span>, <span class="st">"令和4年7月"</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>)) <span class="sc">|&gt;</span> </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">extract</span>(month,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"month"</span>),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"(令和.+年|平成.+年)([0-9]{1,2}月)"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">year</th>
+<th style="text-align: left;">month</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">令和4年</td>
+<td style="text-align: left;">12月</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">令和4年</td>
+<td style="text-align: left;">11月</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">令和4年</td>
+<td style="text-align: left;">10月</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">令和4年</td>
+<td style="text-align: left;">9月</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">令和4年</td>
+<td style="text-align: left;">8月</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">令和4年</td>
+<td style="text-align: left;">7月</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
 <section id="pack-unpack" class="level2">
 <h2 class="anchored" data-anchor-id="pack-unpack">pack / unpack</h2>
 <p>jmastats</p>
-<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-13_119f68aabe6ac23ebc332c640a0ec38a">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jmastats)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_pack <span class="ot">&lt;-</span> </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"monthly"</span>, <span class="at">block_no =</span> <span class="st">"47895"</span>, <span class="at">year =</span> <span class="dv">2022</span>, <span class="at">month =</span> <span class="dv">1</span>, <span class="at">pack =</span> <span class="cn">TRUE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-14_81dd52e932ab99911e66e40e549441d7">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jmastats)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df_pack <span class="ot">&lt;-</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"monthly"</span>, <span class="at">block_no =</span> <span class="st">"47895"</span>, <span class="at">year =</span> <span class="dv">2022</span>, <span class="at">month =</span> <span class="dv">1</span>, <span class="at">pack =</span> <span class="cn">TRUE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Data from: https://www.data.jma.go.jp/obd/stats/etrn/view/monthly_s1.php?prec_no=71&amp;block_no=47895&amp;year=2022&amp;month=1&amp;day=&amp;view=Treated as missing: lines 1, 2, 12 at temperature_min(℃)
 Treated as missing: lines 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 at solar_irradiance_average(MJ/m^2)
@@ -711,11 +761,11 @@ cols(
 )
 ℹ Use `spec()` for the full column specifications.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_unpack <span class="ot">&lt;-</span> </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"monthly"</span>, <span class="at">block_no =</span> <span class="st">"47895"</span>, <span class="at">year =</span> <span class="dv">2022</span>, <span class="at">month =</span> <span class="dv">1</span>, <span class="at">pack =</span> <span class="cn">FALSE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_unpack <span class="ot">&lt;-</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"monthly"</span>, <span class="at">block_no =</span> <span class="st">"47895"</span>, <span class="at">year =</span> <span class="dv">2022</span>, <span class="at">month =</span> <span class="dv">1</span>, <span class="at">pack =</span> <span class="cn">FALSE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-14_d1a174c89ace7f12ba821293a9efae84">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df_pack)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-15_b56c6b4823b83bf3616f21463ae4f66c">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df_pack)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 12
 Columns: 11
@@ -732,8 +782,8 @@ $ cloud_covering   &lt;tibble[,1]&gt; &lt;tbl_df[12 x 1]&gt;
 $ condition        &lt;tibble[,3]&gt; &lt;tbl_df[12 x 3]&gt;</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-15_778dbe1741130b5eeea6ced40c72c6a6">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df_unpack)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-16_d963d8bac96152d1a78e7d1acffc9ead">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(df_unpack)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 12
 Columns: 28
@@ -767,10 +817,10 @@ $ condition_fog_days                  &lt;dbl&gt; 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 
 $ condition_thunder_days              &lt;dbl&gt; 0, 0, 0, 2, 0, 4, 7, 17, 8, 3, 1, 0</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-16_c35f3d93abd5263f92755aaefc05f15a">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df_pack <span class="sc">|&gt;</span> </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(month, precipitation) <span class="sc">|&gt;</span> </span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> precipitation)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-17_d34a6a3b2188863a03f76949da1f481d">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df_pack <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(month, precipitation) <span class="sc">|&gt;</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> precipitation)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="table table-sm table-striped small">
@@ -873,9 +923,9 @@ $ condition_thunder_days              &lt;dbl&gt; 0, 0, 0, 2, 0, 4, 7, 17, 8, 3,
 </div>
 </div>
 </div>
-<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-17_9ea964b1ff9cc3acceb07bb359ce3d78">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df_unpack <span class="sc">|&gt;</span> </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(month, <span class="fu">starts_with</span>(<span class="st">"precipitation"</span>))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="02_tidyr_cache/html/unnamed-chunk-18_65e676adb35d6de810082627de7bc957">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df_unpack <span class="sc">|&gt;</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(month, <span class="fu">starts_with</span>(<span class="st">"precipitation"</span>))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="table table-sm table-striped small">

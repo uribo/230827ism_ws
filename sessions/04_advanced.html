@@ -181,7 +181,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#気象庁のデータ取得" id="toc-気象庁のデータ取得" class="nav-link active" data-scroll-target="#気象庁のデータ取得">気象庁のデータ取得</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/04_advanced.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -203,6 +209,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<section id="気象庁のデータ取得" class="level2">
+<h2 class="anchored" data-anchor-id="気象庁のデータ取得">気象庁のデータ取得</h2>
 <div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-2_40b5c70b168cfb7743ed4906e24097fd">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">'jmastats'</span>, <span class="at">repos =</span> <span class="fu">c</span>(<span class="st">'https://uribo.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span>))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -310,9 +318,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list_rbind</span>(<span class="at">names_to =</span> <span class="st">"station_name"</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>結果は回りくどく書いたコードと同じです。</p>
+<p>最後に、より複雑な条件でのデータ取得を行う例を示します。 対象の気象観測所は4地点、対象の月が7月から9月までの3ヶ月分を取得します。つまり12パターンの組みあわせが必要になる処理を実行します。</p>
+<div class="cell" data-hash="04_advanced_cache/html/unnamed-chunk-12_747f1ae79188c95eb995ad0f560443f3">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">crossing</span>(<span class="at">month =</span> <span class="fu">seq.int</span>(<span class="dv">7</span>, <span class="dv">9</span>),</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">block_no =</span> <span class="fu">c</span>(<span class="st">"47895"</span>, <span class="st">"47891"</span>, <span class="st">"47887"</span>, <span class="st">"47893"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">pmap</span>(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(block_no, month) {</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">jma_collect</span>(<span class="at">item =</span> <span class="st">"daily"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">block_no =</span> block_no,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">year =</span> <span class="dv">2022</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">month =</span> month)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>コードが複雑になればなるほど、purrrパッケージを使う利点が明確になります。</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -683,7 +705,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-left">Copyright 2023, Shinya Uryu</div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/04_advanced.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></div>
+    </div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">
