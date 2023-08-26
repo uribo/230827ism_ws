@@ -15,9 +15,14 @@ title: "About"
 
 ### renvを使った環境の復元
 
+[GitHubリポジトリ](https://github.com/uribo/230827ism_ws)をクローンまたはダウンロードし、Rprojファイルを開き、RStudioを起動させます。続いて下記のコマンドでRパッケージのインストールを行います。なお、GitHubからインストールを行うパッケージがあるため、環境変数"GITHUB_PAT"を事前に設定しておく必要があります。
+
 ```{r}
 #| echo: true
 #| eval: false
-renv::install()
-```
+if (!requireNamespace("renv"))
+  install.packages("renv")
 
+Sys.setenv(GITHUB_PAT = "{自身のGitHub Personal Token}")
+renv::restore()
+```
