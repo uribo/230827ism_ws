@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "sessions/00_tidyverse.html",
+    "href": "sessions/00_tidyverse.html",
+    "title": "tidyverse概論",
+    "section": "",
+    "text": "ここでは、tidyverseはR上でデータサイエンスを円滑に行うためのパッケージ群、またそのパッケージのことを指します。次の図で示すように、tidyverseでは多種多様なデータ形式に対応したファイルの読み込みから、データ整形、可視化までを首尾一貫して行えるパッケージを提供されています。\n\n\n\ntidyverseに含まれるパッケージとその役割\n\n\nこれらのパッケージの開発者はPosit社のメンバーが中心となっており、統一的な設計思想に基づいて開発が行われています。そのため、各パッケージ間での利用方法の差異が少なく、連携が容易な点もtidyverseを使う一つの利点となります。\ntidyverseパッケージは次のコマンドを実行することでインストールされます。たくさんのパッケージをインストールするため、少し時間がかかるかもしれません。ですが、一度インストールしておくと、tidyverseに含まれるパッケージを個別にインストールする手間がなくなります。\n\ninstall.packages(\"tidyverse\")\n\nインストールは済みましたか？\nそれでは、tidyverseパッケージ（そしてそれに含まれる各種パッケージ）を 利用可能にしましょう。\n\nlibrary(tidyverse)\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.2     ✔ readr     2.1.4\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.4.3     ✔ tibble    3.2.1\n✔ lubridate 1.9.2     ✔ tidyr     1.3.0\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\n\nlibrary(tidyverse)を実行すると、コンソールにメッセージが表示されます。 メッセージは2つの内容を含んでいて、一つは利用可能となったパッケージについて、もう一つは関数名の衝突についての情報です。それぞれ詳しく見ていきましょう。\n最初の出力では、tidyverseパッケージ本体のバージョン、またtidyverseによって読み込まれたtidyverseのコアパッケージとそのバージョンを出力しています。この資料を作成している段階では、tidyverseコアパッケージには次のものが含まれます（括弧内はバージョン）。\n\ndplyr (1.1.2)\nreadr (2.1.4)\nforcats (1.0.0)\nstringr (1.5.0)\nggplot (3.4.3)\ntibble (3.2.1)\nlubridate (1.9.2)\ntidyr (1.3.0)\npurrr (1.0.2)\n\nConflictsと表示された2つめの出力は、tidyverseパッケージ群を読み込むことで発生した、関数名の競合状態を示すものです。関数名が競合するとはどういうことでしょう。\nRにはたくさんのパッケージがあり、各パッケージには関数が存在します。そのため、AとB、二つのパッケージで共通の名前をもつ関数（example()関数とします）が利用可能な状態となることがしばしばあります。この場合、Aパッケージのexample()関数を使いたいのに、Bパッケージのexample()関数が実行されてしまう可能性があります。\ntidyverse群の中で、dplyrパッケージのfilter()関数およびlag()関数は、Rの標準パッケージのstatsの同一名の関数と競合します。同じ名前の関数が複数のパッケージで利用できる状態では、後から読み込まれたパッケージが優先されます。そのため、この出力はdplyrパッケージのfilter()関数とlag()関数が利用されることを示すものとなっています。\n関数の衝突問題を解決するためのconflictedパッケージもtidyverseに含まれています。パッケージ間での関数の優先順位を変更するのに役立ちますので、興味のある方はウェブページをご覧ください。"
+  },
+  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
@@ -33,5 +40,19 @@
     "title": "次の一歩を踏み出すためのtidyverse入門",
     "section": "脚注",
     "text": "脚注\n\n\nGitHubリポジトリからこの資料をクローンまたはダウンロードした方はrenvパッケージを使ってパッケージを復元することが可能です。↩︎"
+  },
+  {
+    "objectID": "license.html",
+    "href": "license.html",
+    "title": "ライセンス",
+    "section": "",
+    "text": "資料のうち、プログラム部分はMITライセンスに従い利用できます。プログラム部分以外（文章や画像）はクリエイティブ・コモンズ 表示 - 非営利 - 改変禁止 4.0 国際 (CC BY-NC-ND 4.0)のもと再利用が可能です。"
+  },
+  {
+    "objectID": "license.html#mit-license",
+    "href": "license.html#mit-license",
+    "title": "ライセンス",
+    "section": "MIT License",
+    "text": "MIT License\nCopyright (c) 2023 Shinya Uryu\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
   }
 ]
