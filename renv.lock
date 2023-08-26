@@ -818,8 +818,13 @@
     "jmastats": {
       "Package": "jmastats",
       "Version": "0.1.0.9000",
-      "Source": "Repository",
-      "Repository": "https://uribo.r-universe.dev",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "jmastats",
+      "RemoteUsername": "uribo",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "f43fcf164826e84f4f99543d68ebf6a7b52ce1fd",
       "Requirements": [
         "R",
         "cli",
