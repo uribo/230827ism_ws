@@ -7,45 +7,84 @@ title: "purrr"
 library(tidyverse)
 ```
 
+# purrr速習
+
+purrr（読み方は、「ぷりゃー」、「ぷるるる」等さまざま）パッケージは、Rの関数型プログラミングを支援するパッケージです。関数型プログラミングでは、関数を引数として渡すことで、複数の関数を組み合わせてプログラムを構築します。
+
+purrrパッケージの利点の一つは、関数を繰り返し実行するコードを簡潔に書き換え可能な点です。例えば、以下のコードは、`map()`関数を使って、`mtcars`データセットの各列の平均値を計算しています。
+
 ```{r}
-map2(c("a", "b", "c"),
-     c("D", "E", "F"),
-     paste0)
+mtcars |> 
+  map(mean)
+```
+
+purrrを使わずに同様の処理を実行することももちろん可能です。しかしpurrrには、以下の表に示すようにたくさんの関数が用意されており、目的に応じて関数を使い分けることで、コードの保守性を高めることに貢献します。
+
+| 与える引数の数 | 返り値がリスト | 返り値がベクトル | 返り値が入力と同じ型 | 返り値なし |
+|:---------------|----------------|--------------------|--------------------|------------|
+| 一つ | `map()` | `map_lgl()`, `map_chr()`, `map_dbl()`, `map_int()` | `modify()` | `walk()` |
+| 二つ | `map2()` | `map2_lgl()`, `map2_chr()`, `map2_dbl()`, `map2_int()` | `modify2()` | `walk2()` |
+| 一つ + インデックス | `imap()` | `imap_lgl()`, `imap_chr()`, `imap_dbl()`, `imap_int()` | `imodify()` | `iwalk()` |
+| 任意 | `pmap()` | `pmap_lgl()`, `pmap_chr()`, `pmap_dbl()`, `pmap_int()` | - | `pwalk()` |
+
+<iframe class="speakerdeck-iframe" frameborder="0" src="https://speakerdeck.com/player/5708cd12bda44525920301cab836e0a8" title="そろそろ手を出すpurrr / nekosky" allowfullscreen="true" style="border: 0px; background: padding-box rgba(0, 0, 0, 0.1); margin: 0px; padding: 0px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 40px; width: 100%; height: auto; aspect-ratio: 560 / 315;" data-ratio="1.7777777777777777"></iframe>
+
+## データフレーム中でmap()を使う
+
+```{r}
+map(c(1, 3, 5), \(x) x + 1)
+```
+
+```{r}
+tibble(
+  x = c(1, 3, 5)) |>
+  map(\(x) x + 1)
+
+tibble(
+    x = c(1, 3, 5)) |>
+    modify(\(x) x + 1)
 ```
 
 ```{r}
 #| error: true
-tibble::tibble(
+tibble(
     x = c("a", "b", "c"),
     y = c("D", "E", "F")) |> 
-    purrr::map2(\(x, y) paste0(x, y))
+    map2(\(x, y) paste0(x, y))
 ```
 
 
 ```{r}
-tibble::tibble(
+tibble(
   x = c("a", "b", "c"),
   y = c("D", "E", "F")) |> 
-  purrr::pmap(\(x, y) paste0(x, y))
+  pmap(\(x, y) paste0(x, y))
 ```
 
 ```{r}
 tibble::tibble(
   x = c("a", "b", "c"),
   y = c("D", "E", "F")) %>%
-  dplyr::mutate(z = purrr::pmap(., \(x, y) paste0(x, y))) |> 
-  tidyr::unnest(cols = z)
+  mutate(z = pmap_chr(., \(x, y) paste0(x, y)))
 
-tibble::tibble(
+tibble(
   x = c("a", "b", "c"),
   y = c("D", "E", "F")) %>%
-  dplyr::mutate(z = purrr::pmap_chr(., \(x, y) paste0(x, y)))
+  mutate(z = pmap(., \(x, y) paste0(x, y))) |> 
+  unnest(cols = z)
 ```
 
-
-
-
 プログレスバー
+
+```{r}
+#| eval: false
+#| echo: true
+36:39 |> 
+  purrr::map(jpmesh::administration_mesh, 
+             to_mesh_size = 10, 
+             .progress = TRUE)
+```
+
 
 - errors ... 何番目の要素に問題があるか
 

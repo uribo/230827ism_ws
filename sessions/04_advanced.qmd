@@ -7,6 +7,7 @@ title: "Advanced"
 library(tidyverse)
 ```
 
+## 気象庁のデータ取得
 
 ```{r}
 #| eval: false
@@ -120,12 +121,22 @@ df_targets_st |>
 
 結果は回りくどく書いたコードと同じです。
 
-```{r}
+最後に、より複雑な条件でのデータ取得を行う例を示します。
+対象の気象観測所は4地点、対象の月が7月から9月までの3ヶ月分を取得します。つまり12パターンの組みあわせが必要になる処理を実行します。
 
+```{r}
+#| eval: false
+#| echo: true
+crossing(month = seq.int(7, 9),
+         block_no = c("47895", "47891", "47887", "47893")) |> 
+  purrr::pmap(
+    function(block_no, month) {
+      jma_collect(item = "daily",
+                  block_no = block_no,
+                  year = 2022,
+                  month = month)
+    }
+  )
 ```
 
-
 コードが複雑になればなるほど、purrrパッケージを使う利点が明確になります。
-
-
-

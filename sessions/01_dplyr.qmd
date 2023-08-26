@@ -7,26 +7,48 @@ title: "dplyr"
 library(tidyverse)
 ```
 
+## dplyr速習
+
+dplyrパッケージは主にデータフレームを対象としたデータ加工のための関数を提供します。データ加工のための操作にはいくつかの種類がありますが、dplyrパッケージではこれらの操作を個別の関数として提供しています。dplyrパッケージの関数を組み合わせて利用することで、データ加工の処理を効率的に行うことができます。
+
+dplyrが対象とするデータ操作の種類としては、次のようなものがあります。
+
+-   データの選択・絞り込み... `select()`, `filter()`
+-   データの並べ替え... `arrange()`
+-   データの加工... `mutate()`
+-   データの集約... `summarise()`, `count()`
+-   データの結合... `*_join()`, `bind_*()`
+
+dplyrはこのほか、データフレーム全体ではなく、データの値、すなわちベクトルに対する操作を行う`case_when()`関数、`if_else()`関数、`na_if()`関数など、いくつも備わっています。
+
+データ操作を行う上でdplyrパッケージの関数は直感的にわかりやすいため、dplyrの関数をデータベース上のデータに適用したり、data.tableクラスのオブジェクトに対して適用可能にするパッケージも用意されています。
+
+## データの用意
+
+dplyrパッケージを使って行う処理を説明するために、南極に生育するペンギン個体の各部位の大きさについてのデータを利用します。このデータ（`penguins`）は次のパッケージの読み込みと同時に利用できるようになります。
 
 ```{r}
 library(palmerpenguins)
 ```
-南極に生育するペンギン個体の各部位の大きさについてのデータ
 
 ```{r}
 penguins |> 
   slice_head(n = 6)
 ```
 
-ペンギンデータに対して、以降の処理の説明を簡略化するために、いくつかの変数を減らします。
+ペンギンデータに対して、以降の処理の説明を簡略化するために、データの件数と変数を減らします。
 
 ```{r}
+set.seed(123)
 penguins_small <-
-  penguins |> 
+  penguins |>
+  slice_sample(n = 6) |>
   select(species, island, starts_with("bill"), sex)
 
-glimpse(penguins_small)
+penguins_small
 ```
+
+それではdplyrの関数を使って、このデータを加工していきましょう。
 
 ## 複数の列への処理
 
@@ -37,8 +59,9 @@ glimpse(penguins_small)
 ```{r}
 penguins_small |> 
   # stringr::str_to_upper()はアルファベット文字列を大文字に変換します
-  transmute(species = str_to_upper(species),
-            sex = str_to_upper(sex))
+  mutate(species = str_to_upper(species),
+            sex = str_to_upper(sex),
+         .keep = "none")
 ```
 
 ::: {.panel-tabset}
@@ -50,8 +73,9 @@ penguins_small |>
 
 ```{r}
 penguins_small |> 
-  transmute(across(.cols = c("species", "sex"), 
-                   .fns = str_to_upper))
+  mutate(across(.cols = c("species", "sex"), 
+                   .fns = str_to_upper),
+         .keep = "none")
 ```
 
 結果は出力しませんが、以下のように書くこともできます。
@@ -60,17 +84,21 @@ penguins_small |>
 #| eval: false
 #| echo: true
 penguins_small |> 
-  transmute(across(c(species, sex), 
-                   str_to_upper))
+  mutate(across(c(species, sex), 
+                   str_to_upper),
+         .keep = "none")
 penguins_small |> 
-  transmute(across(c(species, sex), 
-                   ~ str_to_upper(.x)))
+  mutate(across(c(species, sex), 
+                   ~ str_to_upper(.x)),
+         .keep = "none")
 penguins_small |> 
-  transmute(across(c(species, sex), 
-                   function(x) str_to_upper(x)))
+  mutate(across(c(species, sex), 
+                   function(x) str_to_upper(x)),
+         .keep = "none")
 penguins_small |> 
-  transmute(across(c(species, sex), 
-                   \(x) str_to_upper(x)))
+  mutate(across(c(species, sex), 
+                   \(x) str_to_upper(x)),
+         .keep = "none")
 ```
 
 
@@ -108,7 +136,7 @@ penguins_small |>
 ```{r}
 # species及びsexの値は .x としてstr_sub()の第一引数に渡される
 penguins_small |> 
-  transmute(across(c(species, sex), ~ str_sub(.x, 1, 2)))
+  mutate(across(c(species, sex), ~ str_sub(.x, 1, 2)), .keep = "none")
 ```
 
 ## 無名関数1
@@ -116,7 +144,7 @@ penguins_small |>
 ```{r}
 # species及びsexの値は 無名関数の引数xとしてstr_sub()の第一引数に渡される
 penguins_small |> 
-  transmute(across(c(species, sex), function(x) str_sub(x, 1, 2)))
+  mutate(across(c(species, sex), function(x) str_sub(x, 1, 2)), .keep = "none")
 ```
 
 ## 無名関数2
@@ -124,14 +152,14 @@ penguins_small |>
 ```{r}
 # R 4.1.0から利用可能な無名関数の表記も使える
 penguins_small |> 
-  transmute(across(c(species, sex), \(x) str_sub(x, 1, 2)))
+  mutate(across(c(species, sex), \(x) str_sub(x, 1, 2)), .keep = "none")
 ```
 
 ## チルダとリストの組み合わせ
 
 ```{r}
 penguins_small |> 
-  transmute(across(c(species, sex), list(~ str_sub(.x, 1, 2))))
+  mutate(across(c(species, sex), list(~ str_sub(.x, 1, 2))), .keep = "none")
 ```
 
 
@@ -271,9 +299,6 @@ penguins_small |>
             .groups = "keep")
 ```
 
-
-
-
 ## データ結合
 
 dplyrパッケージには次の表に示す通り、柔軟なデータ結合関数が提供されています。
@@ -286,6 +311,7 @@ dplyrパッケージには次の表に示す通り、柔軟なデータ結合関
 | `full_join()` | キーとして指定した変数から、二つのデータフレームのいずれかに存在するレコードを結合して返す |
 | `semi_join()` | (絞り込み) |
 | `anti_join()` | キーとして指定した変数から、左（第一引数）のデータフレームに存在しないレコードを結合して返す |
+| `cross_join()` | 二つのデータフレームのすべての組み合わせを結合して返す |
 
 実行は以下のように、対象のデータのほか、キーとなる変数をby引数で指定します。
 
@@ -296,18 +322,145 @@ inner_join(データ1, データ2, by = "キーとなる変数")
 このby引数の指定方法として、`join_by()`関数を利用することもできます。この関数により、より柔軟な結合条件の指定が実現します。
 
 ```{r}
-sales <- tibble(
-  id = c(1L, 1L, 1L, 2L, 2L),
-  sale_date = as.Date(c("2018-12-31", "2019-01-02", "2019-01-05", "2019-01-04", "2019-01-01"))
-)
-
-promos <- tibble(
-  id = c(1L, 1L, 2L),
-  promo_date = as.Date(c("2019-01-01", "2019-01-05", "2019-01-02"))
-)
-
-# 
-left_join(sales, promos, by = "id")
-left_join(sales, promos, by = "id", relationship = "many-to-many")
+penguins_ja <-
+ tibble(
+  species = c("Adelie", "Gentoo", "Chinstrap"),
+  name = c("アデリーペンギン", "ジェンツーペンギン", "ヒゲペンギン"),
+  redlist = c("NT", "LC", NA_character_))
 ```
 
+::: {.panel-tabset}
+
+## join_by()
+
+```{r}
+penguins_small |> 
+  distinct(species, island) |>
+  left_join(penguins_ja, by = join_by(species))
+```
+
+## by引数
+
+```{r}
+penguins_small |> 
+  distinct(species, island) |>
+  left_join(penguins_ja, by = c("species"))
+```
+
+:::
+
+```{r}
+penguins_ja2 <-
+ tibble(
+  name = c("Adelie", "Gentoo", "Chinstrap"),
+  jp_name = c("アデリーペンギン", "ジェンツーペンギン", "ヒゲペンギン"),
+  redlist = c("NT", "LC", NA_character_))
+ ```
+
+::: {.panel-tabset}
+
+## join_by()
+
+```{r}
+penguins_small |> 
+  distinct(species, island) |>
+  left_join(penguins_ja2, by = join_by(species == name))
+```
+
+## by引数
+
+```{r}
+penguins_small |> 
+  distinct(species, island) |>
+  left_join(penguins_ja2, by = c("species" = "name"))
+```
+
+:::
+
+```{r}
+penguins_name <-
+ tibble(
+  name = c("adeliae", "Gentoo", "antarctica"),
+  redlist = c("NT", "LC", NA_character_))
+```
+
+キー変数の項目が一致しないものがあるとエラーを発生させます。
+
+
+```{r}
+#| error: true
+penguins_small |> 
+  distinct(species, island) |>
+  left_join(penguins_name, by = join_by(species == name), unmatched = "error")
+```
+
+キー変数の項目が一致しないものがあると、そのレコードを除外します。これはデフォルトの挙動です。
+
+```{r}
+penguins_small |> 
+  distinct(species, island) |>
+  left_join(penguins_name, by = join_by(species == name), unmatched = "drop")
+```
+
+もう一つのオプション
+
+```{r}
+df_pgid <-
+  tibble(id = seq.int(4),
+       species = c("Adelie", "Chinstrap", "Gentoo", "Chinstrap"))
+       
+df_pgid
+
+df_pgname <-
+tibble(
+      species = c("Adelie", "Chinstrap", "Chinstrap"),
+      name = c("アデリーペンギン", "ヒゲペンギン", "ナンキョクペンギン"))
+
+df_pgname
+```
+
+```{r}
+#| error: true
+# multiple = "all"の状態
+df_pgid |> 
+  left_join(
+    df_pgname,
+    by = join_by(species))
+```
+
+結合するデータの件数が多い場合、問題がどこかに混ざる危険があります。
+新しい`*_join()`関数では、このような問題を回避するために、結合先のレコードが複数ある場合、デフォルトではエラーを返却します。データや目的に応じて、ユーザー自身が複数の値への対処法を決定することができます。
+
+```{r}
+# 結合先が複数ある状態で、最初のレコードのみを結合する
+# multiple = "last" にすると最後のレコードのみを結合する
+df_pgid |> 
+  left_join(
+    df_pgname,
+    by = join_by(species),
+    multiple = "first")
+```
+
+```{r}
+df_pgid |> 
+  left_join(
+    df_pgname,
+    by = join_by(species),
+    multiple = "all",
+    relationship = "many-to-many")
+```
+
+非等価結合、ローリング結合等はスキップ...
+
+```{r}
+penguins_name <-
+  tibble(
+    name = c("Adelie", "Gentoo", "Chinstrap"),
+    preview_n = c(160, 121, 60),
+    redlist = c("NT", "LC", NA_character_))
+
+# Adelieはn >= preview_nの条件に合わないので結合から除外される
+penguins_small |> 
+  count(species) |> 
+  left_join(penguins_name, by = join_by(species == name, n >= preview_n))
+```

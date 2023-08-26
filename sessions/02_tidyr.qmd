@@ -137,6 +137,16 @@ df_address |>
   unnest_longer(col = address_components)
 ```
 
+## extract
+
+```{r}
+tibble(month = c("令和4年12月", "令和4年11月", 
+"令和4年10月", "令和4年9月", "令和4年8月", "令和4年7月"
+)) |> 
+extract(month,
+                   c("year", "month"),
+                   "(令和.+年|平成.+年)([0-9]{1,2}月)")
+```
 
 ## pack / unpack
 

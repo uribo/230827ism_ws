@@ -53,6 +53,8 @@ my_barplot <- function(data, var) {
 my_barplot(mtcars, gear)
 ```
 
+`{{` (カリーカリー)演算子
+
 ```{r}
 #| eval: false
 #| echo: true
@@ -95,13 +97,15 @@ penguins |>
   geom_bar(stat = "identity")
 ```
 
+`:=`
+
 ```{r}
 #| eval: false
 #| echo: true
 my_barplot2 <- function(data, var, ...) {
   data |> 
     count({{ var }}) |> 
-    mutate({{ var}} := fct_reorder({{var}}, n)) |> 
+    mutate({{ var }} := fct_reorder({{ var }}, n)) |> 
     ggplot() +
     aes({{ var }}, n, fill = {{ var }}) +
     geom_bar(stat = "identity",
@@ -113,5 +117,24 @@ my_barplot2(penguins, species)
 my_barplot2(penguins, species, fill = "tomato")
 ```
 
+```{r}
+#| eval: false
+#| echo: true
+library(jmastats)
+
+crossing(year = seq.int(2020, 2022),
+         month = seq.int(7, 9),
+         block_no = c("47895", "47891", "47887", "47893")) |>
+      purrr::pmap(
+        function(block_no, year, month, ...) {
+          jmastats::jma_collect(item = "monthly",
+                                block_no = {{ block_no }},
+                                year = {{ year }},
+                                month = {{ month }}) |>
+            dplyr::mutate(block_no = {{ block_no }})
+        }
+      ) |>
+      dplyr::bind_rows()
+```
 
 
