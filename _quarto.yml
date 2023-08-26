@@ -3,6 +3,9 @@ project:
   render:
     - index.qmd
     - about.qmd
+    - license.qmd
+    - references.qmd
+    - sessions/*.qmd
 
 lang: ja
 
@@ -22,6 +25,13 @@ website:
       - icon: github
         href: https://github.com/uribo/230827ism_ws
         text: GitHub
+    left:
+      - text: "Sessions"
+      - menu:
+        - text: tidyverse
+          href: sessions/00_tidyverse.qmd
+
+  site-url: https://uribo.github.io/230827ism_ws
 
   repo-url: https://github.com/uribo/230827ism_ws
   repo-actions: [edit, issue]
@@ -29,7 +39,10 @@ website:
 format:
   html:
     theme:
-      light: cosmo
+      light:
+       - cerulean
+       - theme.scss
+      dark: darkly
     toc: true
     code-copy: true
     code-overflow: wrap
