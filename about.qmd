@@ -1,0 +1,23 @@
+---
+title: "About"
+---
+
+このページは2023年8月27日に開催される統計数理研究所 統計思考院オンラインワークショップ「**[探索的ビッグデータ解析と再現可能研究](https://sites.google.com/view/ws-ebda-rr-2023/)**」での発表の一つ、「次の一歩を踏み出すためのtidyverse入門」（発表者：{{< fa brands twitter >}} [瓜生真也](https://twitter.com/u_ribo) の資料置き場です。
+
+ウェブサイトはQuartoを使って構築されています。
+このページの内容を記載した`.qmd`ファイルは{{< fa brands github >}} [GitHub上のリポジトリ](https://github.com/uribo/230827ism_ws)に保存されています。
+内容についてご意見、改善の提案がある方はissuesに投稿をお願いします。
+
+## 実行環境
+
+- R 4.3.1
+- macOS Ventura 13.4.1
+
+### renvを使った環境の復元
+
+```{r}
+#| echo: true
+#| eval: false
+renv::install()
+```
+

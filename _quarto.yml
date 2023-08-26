@@ -1,0 +1,40 @@
+project:
+  type: website
+  render:
+    - index.qmd
+    - about.qmd
+
+lang: ja
+
+website:
+  title: "次の一歩を踏み出すためのtidyverse入門"
+  navbar:
+    background: "#5192fb"
+    pinned: false
+    align: center
+    right:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+      - href: license.qmd
+        text: License
+      - icon: github
+        href: https://github.com/uribo/230827ism_ws
+        text: GitHub
+
+  repo-url: https://github.com/uribo/230827ism_ws
+  repo-actions: [edit, issue]
+
+format:
+  html:
+    theme:
+      light: cosmo
+    toc: true
+    code-copy: true
+    code-overflow: wrap
+
+knitr:
+  opts_chunk:
+    dev: "ragg_png"
+    dpi: 300
