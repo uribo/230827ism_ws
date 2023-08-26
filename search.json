@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "このページは2023年8月27日に開催される統計数理研究所 統計思考院オンラインワークショップ「探索的ビッグデータ解析と再現可能研究」での発表の一つ、「次の一歩を踏み出すためのtidyverse入門」（発表者： 瓜生真也 の資料置き場です。\nウェブサイトはQuartoを使って構築されています。 このページの内容を記載した.qmdファイルは GitHub上のリポジトリに保存されています。 内容についてご意見、改善の提案がある方はissuesに投稿をお願いします。"
+  },
+  {
+    "objectID": "about.html#実行環境",
+    "href": "about.html#実行環境",
+    "title": "About",
+    "section": "実行環境",
+    "text": "実行環境\n\nR 4.3.1\nmacOS Ventura 13.4.1\n\n\nrenvを使った環境の復元\n\nrenv::install()"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "次の一歩を踏み出すためのtidyverse入門",
+    "section": "",
+    "text": "tidyverseはR言語でのデータ分析を行う際に便利なパッケージの集まりです。 統一された設計思想のもとに、ファイルの読み書き（readr）からデータ操作（dplyr、tidyr）、可視化（ggplot2）などのパッケージを提供しています。2016年の登場から度重なるアップデートを経て、現在の最新バージョンは2.0.0と成熟期を迎えている状態です。 国内外でtidyverseや関係するパッケージの解説は豊富に存在します。一方でRでの関数型プログラミングを補助するpurrrパッケージなど、他と比べて焦点を当てられる機会が少ないパッケージ・関数も見受けられます。この要因として、tidyverseの更新速度に追いつけず、新しい機能について十分に身につけることができないことがあると私は考えています。\nこの資料では、tidyverseのさらなる活用を目指す人を対象に、これらの使い方を解説するとともに、より効率的に作業を進めるためのノウハウを伝授することを目指しています。なお、紹介するパッケージの基本的な情報については既存の資料を参考にしてください。"
+  },
+  {
+    "objectID": "index.html#tidyverseパッケージの読み込み",
+    "href": "index.html#tidyverseパッケージの読み込み",
+    "title": "次の一歩を踏み出すためのtidyverse入門",
+    "section": "tidyverseパッケージの読み込み",
+    "text": "tidyverseパッケージの読み込み\n資料全体を通してtidyverseパッケージを利用します。次のコマンドでtidyverseに含まれる各パッケージを利用可能な状態にしておきましょう。なおパッケージのインストールはinstall.packages(\"tidyverse\")で行われます1。\n\nlibrary(tidyverse)\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.2     ✔ readr     2.1.4\n✔ forcats   1.0.0     ✔ stringr   1.5.0\n✔ ggplot2   3.4.3     ✔ tibble    3.2.1\n✔ lubridate 1.9.2     ✔ tidyr     1.3.0\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\n\ntidyverseパッケージの最新版は、2023年8月27日現在、v2.0.0です。この資料でも最新版のv2.0.0を利用します。\n\n主な対象者\n\ndplyrやggplot2、tidyrについての基礎知識がある\ntidyverseに含まれるパッケージの関数の知識を更新したい\nデータフレームだけでなく、リストの操作も快適に行えるようになりたい\n繰り返しの処理を書きがち、コードを簡潔に記述したい\n関数を書くことがない、あるいは少ない"
+  },
+  {
+    "objectID": "index.html#footnotes",
+    "href": "index.html#footnotes",
+    "title": "次の一歩を踏み出すためのtidyverse入門",
+    "section": "脚注",
+    "text": "脚注\n\n\nGitHubリポジトリからこの資料をクローンまたはダウンロードした方はrenvパッケージを使ってパッケージを復元することが可能です。↩︎"
+  }
+]
