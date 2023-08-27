@@ -181,7 +181,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#tidyverseの読み込み時になにが起こっているか" id="toc-tidyverseの読み込み時になにが起こっているか" class="nav-link active" data-scroll-target="#tidyverseの読み込み時になにが起こっているか">tidyverseの読み込み時になにが起こっているか</a></li>
+  <li><a href="#ライフサイクル" id="toc-ライフサイクル" class="nav-link" data-scroll-target="#ライフサイクル">ライフサイクル</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/00_tidyverse.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -217,6 +224,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>インストールは済みましたか？</p>
 <p>それでは、tidyverseパッケージ（そしてそれに含まれる各種パッケージ）を 利用可能にしましょう。</p>
+<section id="tidyverseの読み込み時になにが起こっているか" class="level2">
+<h2 class="anchored" data-anchor-id="tidyverseの読み込み時になにが起こっているか">tidyverseの読み込み時になにが起こっているか</h2>
 <div class="cell" data-hash="00_tidyverse_cache/html/unnamed-chunk-2_dae3eadd6ee62e217a0c8b07482e18ed">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -249,8 +258,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Rにはたくさんのパッケージがあり、各パッケージには関数が存在します。そのため、AとB、二つのパッケージで共通の名前をもつ関数（<code>example()</code>関数とします）が利用可能な状態となることがしばしばあります。この場合、Aパッケージの<code>example()</code>関数を使いたいのに、Bパッケージの<code>example()</code>関数が実行されてしまう可能性があります。</p>
 <p>tidyverse群の中で、dplyrパッケージの<code>filter()</code>関数および<code>lag()</code>関数は、Rの標準パッケージのstatsの同一名の関数と競合します。同じ名前の関数が複数のパッケージで利用できる状態では、後から読み込まれたパッケージが優先されます。そのため、この出力はdplyrパッケージの<code>filter()</code>関数と<code>lag()</code>関数が利用されることを示すものとなっています。</p>
 <p>関数の衝突問題を解決するためのconflictedパッケージもtidyverseに含まれています。パッケージ間での関数の優先順位を変更するのに役立ちますので、興味のある方は<a href="https://conflicted.r-lib.org">ウェブページ</a>をご覧ください。</p>
+</section>
+<section id="ライフサイクル" class="level2">
+<h2 class="anchored" data-anchor-id="ライフサイクル">ライフサイクル</h2>
+<p>Posit社のHadley Wickhamを中心に、関数へのライフサイクルの表示を推奨しています。関数の実用段階に応じてライフサイクルを設定し、どの関数が実験的なものなのか、どの関数が廃止予定なのかをユーザーにわかりやすく伝えることが目的です。関数の開発速度が速いtidyverseパッケージ群では、このライフサイクルへの注意が重要です。</p>
+<p>ライフサイクルには次の段階があります。</p>
+<ul>
+<li>experimental</li>
+<li>stable（デフォルト）</li>
+<li>superseded</li>
+<li>deprecated</li>
+</ul>
+<p>パッケージがどのライフサイクル段階にあるのかは、関数のドキュメントを参照するとわかります。</p>
+<p><img src="../images/transmute_lifecycle.png" class="img-fluid"></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -621,7 +644,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-left">Copyright 2023, Shinya Uryu</div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/00_tidyverse.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></div>
+    </div>
     <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
     <li class="nav-item compact">

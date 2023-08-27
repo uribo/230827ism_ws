@@ -185,10 +185,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#purrr速習" id="toc-purrr速習" class="nav-link active" data-scroll-target="#purrr速習">purrr速習</a>
-  <ul class="collapse">
+  <li><a href="#purrr速習" id="toc-purrr速習" class="nav-link active" data-scroll-target="#purrr速習">purrr速習</a></li>
   <li><a href="#データフレーム中でmapを使う" id="toc-データフレーム中でmapを使う" class="nav-link" data-scroll-target="#データフレーム中でmapを使う">データフレーム中でmap()を使う</a></li>
-  </ul></li>
+  <li><a href="#ユーティリティ" id="toc-ユーティリティ" class="nav-link" data-scroll-target="#ユーティリティ">ユーティリティ</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/uribo/230827ism_ws/edit/main/sessions/03_purrr.qmd" class="toc-action">編集</a></p><p><a href="https://github.com/uribo/230827ism_ws/issues/new" class="toc-action">問題を報告</a></p></div></div></nav>
     </div>
@@ -212,8 +211,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="purrr速習" class="level1">
-<h1>purrr速習</h1>
+<section id="purrr速習" class="level2">
+<h2 class="anchored" data-anchor-id="purrr速習">purrr速習</h2>
 <p>purrr（読み方は、「ぷりゃー」、「ぷるるる」等さまざま）パッケージは、Rの関数型プログラミングを支援するパッケージです。関数型プログラミングでは、関数を引数として渡すことで、複数の関数を組み合わせてプログラムを構築します。</p>
 <p>purrrパッケージの利点の一つは、関数を繰り返し実行するコードを簡潔に書き換え可能な点です。例えば、以下のコードは、<code>map()</code>関数を使って、<code>mtcars</code>データセットの各列の平均値を計算しています。</p>
 <div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-2_15a6b66f87129e363ba06f60f3b4ea64">
@@ -276,14 +275,14 @@ $carb
 <tr class="odd">
 <td style="text-align: left;">一つ</td>
 <td><code>map()</code></td>
-<td><code>map_lgl()</code>, <code>map_chr()</code>, <code>map_dbl()</code>, <code>map_int()</code></td>
+<td><code>map_lgl()</code>, <code>map_chr()</code>, <code>map_dbl()</code>, <code>map_int()</code>, <code>map_vec()</code></td>
 <td><code>modify()</code></td>
 <td><code>walk()</code></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">二つ</td>
 <td><code>map2()</code></td>
-<td><code>map2_lgl()</code>, <code>map2_chr()</code>, <code>map2_dbl()</code>, <code>map2_int()</code></td>
+<td><code>map2_lgl()</code>, <code>map2_chr()</code>, <code>map2_dbl()</code>, <code>map2_int()</code>, <code>map2_vec()</code></td>
 <td><code>modify2()</code></td>
 <td><code>walk2()</code></td>
 </tr>
@@ -297,7 +296,7 @@ $carb
 <tr class="even">
 <td style="text-align: left;">任意</td>
 <td><code>pmap()</code></td>
-<td><code>pmap_lgl()</code>, <code>pmap_chr()</code>, <code>pmap_dbl()</code>, <code>pmap_int()</code></td>
+<td><code>pmap_lgl()</code>, <code>pmap_chr()</code>, <code>pmap_dbl()</code>, <code>pmap_int()</code>, <code>pmap_vec()</code></td>
 <td>-</td>
 <td><code>pwalk()</code></td>
 </tr>
@@ -305,6 +304,7 @@ $carb
 </table>
 <iframe class="speakerdeck-iframe" frameborder="0" src="https://speakerdeck.com/player/5708cd12bda44525920301cab836e0a8" title="そろそろ手を出すpurrr / nekosky" allowfullscreen="true" style="border: 0px; background: padding-box rgba(0, 0, 0, 0.1); margin: 0px; padding: 0px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 40px; width: 100%; height: auto; aspect-ratio: 560 / 315;" data-ratio="1.7777777777777777">
 </iframe>
+</section>
 <section id="データフレーム中でmapを使う" class="level2">
 <h2 class="anchored" data-anchor-id="データフレーム中でmapを使う">データフレーム中でmap()を使う</h2>
 <div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-3_21572ea1c751cfba73747fbb2975fa91">
@@ -320,17 +320,20 @@ $carb
 [1] 6</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-4_a1554a7284394bc82e8a7a34bf9a146d">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(\(x) x <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-4_0ae07bb02b603fe606477a23995a9a47">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># map()関数の返り値は入力のデータにかかわらずリスト</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(\(x) x <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$x
 [1] 2 4 6</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">modify</span>(\(x) x <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modify()は入力の形式を出力に反映する。</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># データフレームを与えたら出力はデータフレームのまま</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">modify</span>(\(x) x <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="table table-sm table-striped small">
@@ -354,6 +357,7 @@ $carb
 </div>
 </div>
 </div>
+<p>1つ以上の変数を引数に与える関数を適用する場合、<code>pmap()</code>関数を使うと便利です。</p>
 <div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-5_570b348f4b5f53934cd9692db304ec6d">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>),</span>
@@ -380,11 +384,12 @@ $carb
 [1] "cF"</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-7_820908a3a566763e6968e265a16527b1">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<p>dplyrパッケージの<code>mutate()</code>関数と組みあわせることで、ベクトル処理に対応していない関数であってもデータフレームの値に格納できます。</p>
+<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-7_738e81c49df291407527cafc8dedc070">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>),</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"E"</span>, <span class="st">"F"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">z =</span> <span class="fu">pmap_chr</span>(., \(x, y) <span class="fu">paste0</span>(x, y)))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"E"</span>, <span class="st">"F"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">z =</span> <span class="fu">paste0</span>(x, y))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="table table-sm table-striped small">
@@ -418,8 +423,42 @@ $carb
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>),</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"E"</span>, <span class="st">"F"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">z =</span> <span class="fu">pmap</span>(., \(x, y) <span class="fu">paste0</span>(x, y))) <span class="sc">|&gt;</span> </span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> z)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">z =</span> <span class="fu">pmap_chr</span>(., \(x, y) <span class="fu">paste0</span>(x, y)))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+<th style="text-align: left;">y</th>
+<th style="text-align: left;">z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">a</td>
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">aD</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b</td>
+<td style="text-align: left;">E</td>
+<td style="text-align: left;">bE</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">c</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: left;">cF</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"D"</span>, <span class="st">"E"</span>, <span class="st">"F"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">z =</span> <span class="fu">pmap</span>(., \(x, y) <span class="fu">paste0</span>(x, y))) <span class="sc">|&gt;</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> z)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="table table-sm table-striped small">
@@ -451,29 +490,64 @@ $carb
 </div>
 </div>
 </div>
-<p>プログレスバー</p>
-<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-8_6772c33f45688202a6dcdfca7af5e593">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dv">36</span><span class="sc">:</span><span class="dv">39</span> <span class="sc">|&gt;</span> </span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(jpmesh<span class="sc">::</span>administration_mesh, </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">to_mesh_size =</span> <span class="dv">10</span>, </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">.progress =</span> <span class="cn">TRUE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-8_067be4487df5fe7c13eb35e7110f342f">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(jpmesh)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mesh_code =</span> <span class="fu">c</span>(<span class="st">"6840"</span>, <span class="st">"624335"</span>, <span class="st">"47293525"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mesh_code =</span> <span class="fu">pmap_vec</span>(., \(mesh_code) <span class="fu">as_meshcode</span>(mesh_code))) <span class="sc">%&gt;%</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mesh_size =</span> <span class="fu">pmap_vec</span>(., \(mesh_code) <span class="fu">mesh_size</span>(mesh_code)))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">mesh_code</th>
+<th style="text-align: right;">mesh_size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">6840</td>
+<td style="text-align: right;">80 [km]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">624335</td>
+<td style="text-align: right;">10 [km]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">47293525</td>
+<td style="text-align: right;">1 [km]</td>
+</tr>
+</tbody>
+</table>
 </div>
-<ul>
-<li>errors … 何番目の要素に問題があるか</li>
-</ul>
-<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-9_32e6dd1912088262f26a4b540467c62e">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="st">"c"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(\(x) x <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="ユーティリティ" class="level2">
+<h2 class="anchored" data-anchor-id="ユーティリティ">ユーティリティ</h2>
+<p>purrr 1.0.0から<code>map()</code>関数の実行時に、処理状況を示すプログレスバーが表示されるようになっています。実行時間の長い処理を適用する際、全体のうちどの程度進んでいるのかがわかると安心です。これは.progress引数で制御します。</p>
+<div class="cell" data-hash="03_purrr_cache/html/map()関数の適用時におけるプログレスバーの表示_de0c28dcab07db5a59b43345238c137d">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="dv">36</span><span class="sc">:</span><span class="dv">39</span> <span class="sc">|&gt;</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(jpmesh<span class="sc">::</span>administration_mesh, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">to_mesh_size =</span> <span class="dv">10</span>, </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">.progress =</span> <span class="cn">TRUE</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>処理に失敗する要素の位置を特定できるようになっています。 これにより問題の検出と対応が素早く行えるようになります。</p>
+<div class="cell" data-hash="03_purrr_cache/html/3つめの要素が文字列であるためエラーとなる_d296d55124a6a6fc6cc2fb16c22ec450">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="st">"c"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(\(x) x <span class="sc">+</span> <span class="dv">1</span>)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
-<pre><code>Error in `purrr::map()`:
+<pre><code>Error in `map()`:
 ℹ In index: 3.
 Caused by error in `x + 1`:
 ! non-numeric argument to binary operator</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-10_4e3b4246b158be4554e2a6ed46d7a0f5">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq.int</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(\(x) <span class="fu">factor</span>(letters[x]))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>文字列、数値、論理値以外のベクトル化</p>
+<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-11_457a0f0db39dce3ba8bdd2ba59d7530d">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq.int</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(\(x) <span class="fu">factor</span>(letters[x]))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [1] a
@@ -488,29 +562,20 @@ Levels: b
 Levels: c</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-11_c77b166af08898fd30b4a80c674230a5">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq.int</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_vec</span>(\(x) <span class="fu">factor</span>(letters[x]))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-12_8aa9e4fc1c3a368b18ee94f69dac936d">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq.int</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_vec</span>(\(x) <span class="fu">factor</span>(letters[x]))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] a b c
 Levels: a b c</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-12_a6077ecff6071201f56e64a95e30e531">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="dv">1</span>, <span class="at">b =</span> <span class="dv">2</span>, <span class="at">c =</span> <span class="dv">3</span>, <span class="at">D =</span> <span class="dv">4</span>, <span class="at">E =</span> <span class="dv">5</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>x <span class="sc">|&gt;</span> </span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep_at</span>(<span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str</span>()</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>List of 3
- $ a: num 1
- $ b: num 2
- $ c: num 3</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>x <span class="sc">|&gt;</span> </span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep_at</span>(<span class="cf">function</span>(x) x <span class="sc">==</span> <span class="fu">tolower</span>(x)) <span class="sc">|&gt;</span> </span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str</span>()</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="03_purrr_cache/html/unnamed-chunk-13_15e21f75bd980dba4c4d20c67d52f205">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="dv">1</span>, <span class="at">b =</span> <span class="dv">2</span>, <span class="at">c =</span> <span class="dv">3</span>, <span class="at">D =</span> <span class="dv">4</span>, <span class="at">E =</span> <span class="dv">5</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>x <span class="sc">|&gt;</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep_at</span>(<span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str</span>()</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 3
  $ a: num 1
@@ -518,8 +583,17 @@ Levels: a b c</code></pre>
  $ c: num 3</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>x <span class="sc">|&gt;</span> </span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">discard_at</span>(<span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep_at</span>(<span class="cf">function</span>(x) x <span class="sc">==</span> <span class="fu">tolower</span>(x)) <span class="sc">|&gt;</span> </span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str</span>()</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 3
+ $ a: num 1
+ $ b: num 2
+ $ c: num 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>x <span class="sc">|&gt;</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">discard_at</span>(<span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str</span>()</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 2
  $ D: num 4
@@ -528,7 +602,6 @@ Levels: a b c</code></pre>
 </div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
