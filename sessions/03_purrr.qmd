@@ -7,7 +7,7 @@ title: "purrr"
 library(tidyverse)
 ```
 
-# purrr速習
+## purrr速習
 
 purrr（読み方は、「ぷりゃー」、「ぷるるる」等さまざま）パッケージは、Rの関数型プログラミングを支援するパッケージです。関数型プログラミングでは、関数を引数として渡すことで、複数の関数を組み合わせてプログラムを構築します。
 
@@ -22,10 +22,10 @@ purrrを使わずに同様の処理を実行することももちろん可能で
 
 | 与える引数の数 | 返り値がリスト | 返り値がベクトル | 返り値が入力と同じ型 | 返り値なし |
 |:---------------|----------------|--------------------|--------------------|------------|
-| 一つ | `map()` | `map_lgl()`, `map_chr()`, `map_dbl()`, `map_int()` | `modify()` | `walk()` |
-| 二つ | `map2()` | `map2_lgl()`, `map2_chr()`, `map2_dbl()`, `map2_int()` | `modify2()` | `walk2()` |
+| 一つ | `map()` | `map_lgl()`, `map_chr()`, `map_dbl()`, `map_int()`, `map_vec()` | `modify()` | `walk()` |
+| 二つ | `map2()` | `map2_lgl()`, `map2_chr()`, `map2_dbl()`, `map2_int()`, `map2_vec()` | `modify2()` | `walk2()` |
 | 一つ + インデックス | `imap()` | `imap_lgl()`, `imap_chr()`, `imap_dbl()`, `imap_int()` | `imodify()` | `iwalk()` |
-| 任意 | `pmap()` | `pmap_lgl()`, `pmap_chr()`, `pmap_dbl()`, `pmap_int()` | - | `pwalk()` |
+| 任意 | `pmap()` | `pmap_lgl()`, `pmap_chr()`, `pmap_dbl()`, `pmap_int()`, `pmap_vec()` | - | `pwalk()` |
 
 <iframe class="speakerdeck-iframe" frameborder="0" src="https://speakerdeck.com/player/5708cd12bda44525920301cab836e0a8" title="そろそろ手を出すpurrr / nekosky" allowfullscreen="true" style="border: 0px; background: padding-box rgba(0, 0, 0, 0.1); margin: 0px; padding: 0px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 40px; width: 100%; height: auto; aspect-ratio: 560 / 315;" data-ratio="1.7777777777777777"></iframe>
 
@@ -36,14 +36,19 @@ map(c(1, 3, 5), \(x) x + 1)
 ```
 
 ```{r}
+# map()関数の返り値は入力のデータにかかわらずリスト
 tibble(
   x = c(1, 3, 5)) |>
   map(\(x) x + 1)
 
+# modify()は入力の形式を出力に反映する。
+# データフレームを与えたら出力はデータフレームのまま
 tibble(
     x = c(1, 3, 5)) |>
     modify(\(x) x + 1)
 ```
+
+1つ以上の変数を引数に与える関数を適用する場合、`pmap()`関数を使うと便利です。
 
 ```{r}
 #| error: true
@@ -61,8 +66,15 @@ tibble(
   pmap(\(x, y) paste0(x, y))
 ```
 
+dplyrパッケージの`mutate()`関数と組みあわせることで、ベクトル処理に対応していない関数であってもデータフレームの値に格納できます。
+
 ```{r}
-tibble::tibble(
+tibble(
+  x = c("a", "b", "c"),
+  y = c("D", "E", "F")) |> 
+  mutate(z = paste0(x, y))
+
+tibble(
   x = c("a", "b", "c"),
   y = c("D", "E", "F")) %>%
   mutate(z = pmap_chr(., \(x, y) paste0(x, y)))
@@ -74,25 +86,40 @@ tibble(
   unnest(cols = z)
 ```
 
-プログレスバー
+```{r}
+library(jpmesh)
+tibble(
+  mesh_code = c("6840", "624335", "47293525")) %>% 
+  mutate(mesh_code = pmap_vec(., \(mesh_code) as_meshcode(mesh_code))) %>%
+  mutate(mesh_size = pmap_vec(., \(mesh_code) mesh_size(mesh_code)))
+```
+
+## ユーティリティ
+
+purrr 1.0.0から`map()`関数の実行時に、処理状況を示すプログレスバーが表示されるようになっています。実行時間の長い処理を適用する際、全体のうちどの程度進んでいるのかがわかると安心です。これは.progress引数で制御します。
 
 ```{r}
+#| label: map()関数の適用時におけるプログレスバーの表示
 #| eval: false
 #| echo: true
 36:39 |> 
-  purrr::map(jpmesh::administration_mesh, 
+  map(jpmesh::administration_mesh, 
              to_mesh_size = 10, 
              .progress = TRUE)
 ```
 
-
-- errors ... 何番目の要素に問題があるか
+処理に失敗する要素の位置を特定できるようになっています。
+これにより問題の検出と対応が素早く行えるようになります。
 
 ```{r}
+#| label: 3つめの要素が文字列であるためエラーとなる
 #| error: true
 list(1, 2, "c") |> 
-  purrr::map(\(x) x + 1)
+  map(\(x) x + 1)
 ```
+
+文字列、数値、論理値以外のベクトル化
+
 ```{r}
 #| error: true
 seq.int(3) |> 
